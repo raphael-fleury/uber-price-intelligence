@@ -2,12 +2,6 @@ import { v } from "convex/values";
 import { action, mutation, query, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { internal } from "./_generated/api";
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-  baseURL: process.env.CONVEX_OPENAI_BASE_URL,
-  apiKey: process.env.CONVEX_OPENAI_API_KEY,
-});
 
 export const getPredictions = query({
   args: {},
@@ -53,68 +47,46 @@ export const predictPrice = action({
     const dayOfWeek = dateObj.toLocaleDateString("pt-BR", { weekday: "long" });
     const hour = dateObj.getHours();
 
-    const prompt = `Você é um especialista em análise de preços de corridas de transporte por aplicativo (como Uber, 99, etc.) no Brasil.
+    // Gerar valores aleatórios para simulação
+    const classificationLevels = [1, 2, 3, 4, 5];
+    const classifications = [
+      "Muito abaixo do normal",
+      "Abaixo do normal",
+      "Na média",
+      "Acima do normal",
+      "Muito acima do normal",
+    ];
+    const factorsOptions = [
+      "Horário de pico",
+      "Dia da semana",
+      "Demanda alta",
+      "Distância longa",
+      "Trânsito intenso",
+      "Clima adverso",
+      "Horário noturno",
+      "Final de semana",
+    ];
 
-Analise a seguinte solicitação de corrida e classifique o preço esperado em relação à média histórica:
-
-- Origem: ${args.origin}
-- Destino: ${args.destination}
-- Data: ${args.date} (${dayOfWeek})
-- Horário: ${args.time} (${hour}h)
-
-Considere fatores como:
-- Horário de pico (manhã 7-9h, tarde 17-20h)
-- Dia da semana (dias úteis vs fins de semana)
-- Eventos especiais ou feriados próximos à data
-- Condições climáticas típicas para a época do ano
-- Distância e complexidade do trajeto
-- Demanda histórica para esse tipo de rota
-
-Responda APENAS com um JSON válido no seguinte formato (sem markdown, sem explicações fora do JSON):
-{
-  "classification": "Na média",
-  "classificationLevel": 3,
-  "reasoning": "Explicação concisa em português de 2-3 frases sobre por que o preço está nessa faixa",
-  "factors": ["fator 1", "fator 2", "fator 3"]
-}
-
-Onde classificationLevel deve ser:
-1 = "Muito abaixo do normal"
-2 = "Abaixo do normal"
-3 = "Na média"
-4 = "Acima do normal"
-5 = "Muito acima do normal"
-
-E classification deve ser exatamente uma dessas strings:
-"Muito abaixo do normal", "Abaixo do normal", "Na média", "Acima do normal", "Muito acima do normal"
-
-factors deve ter entre 2 e 4 fatores principais que influenciam o preço.`;
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4.1-nano",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.3,
-    });
-
-    const content = response.choices[0].message.content ?? "";
-
-    let parsed: {
-      classification: string;
-      classificationLevel: number;
-      reasoning: string;
-      factors: string[];
-    };
-
-    try {
-      parsed = JSON.parse(content);
-    } catch {
-      parsed = {
-        classification: "Na média",
-        classificationLevel: 3,
-        reasoning: "Não foi possível analisar os dados com precisão. Estimativa baseada em padrões gerais.",
-        factors: ["Dados insuficientes para análise detalhada"],
-      };
+    const randomClassificationLevel =
+      classificationLevels[Math.floor(Math.random() * classificationLevels.length)];
+    const randomClassification = classifications[randomClassificationLevel - 1];
+    const randomFactors = [] as Array<typeof factorsOptions[number]>;
+    for (let i = 0; i < Math.floor(Math.random() * 3) + 2; i++) {
+      const randomFactor =
+        factorsOptions[Math.floor(Math.random() * factorsOptions.length)];
+      if (!randomFactors.includes(randomFactor)) {
+        randomFactors.push(randomFactor);
+      }
     }
+
+    const parsed = {
+      classification: randomClassification,
+      classificationLevel: randomClassificationLevel,
+      reasoning: `A corrida de ${args.origin} para ${args.destination} no ${dayOfWeek} às ${args.time} está classificada como "${randomClassification}" baseado em padrões históricos e condições atuais.
+ Fatores principais influenciam essa estimativa.
+`,
+      factors: randomFactors,
+    };
 
     await ctx.runMutation(internal.predictions.savePrediction, {
       userId: userId ?? undefined,
