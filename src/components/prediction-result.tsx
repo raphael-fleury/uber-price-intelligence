@@ -1,3 +1,7 @@
+import { Card } from "./ui/card";
+import { Chip } from "./ui/chip";
+import { Gauge } from "./ui/gauge";
+
 type PredictionData = {
   classification: string;
   classificationLevel: number;
@@ -13,66 +17,54 @@ type Props = {
   time: string;
 };
 
-const levelConfig = {
+type LevelConfig = {
+  label: string;
+  bgColor: string;
+  textColor: string;
+  chipColor: "emerald" | "lime" | "blue" | "orange" | "crimson";
+  description: string;
+};
+
+const levelConfig: Record<number, LevelConfig> = {
   1: {
     label: "Muito abaixo do normal",
-    emoji: "🟢",
-    bg: "bg-emerald-900/30",
-    border: "border-emerald-500/40",
-    text: "text-emerald-400",
-    badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-    bar: "bg-emerald-500",
-    barWidth: "w-1/5",
+    bgColor: "bg-semantic-emerald/10",
+    textColor: "text-semantic-emerald",
+    chipColor: "emerald",
     description: "Ótimo momento para pegar uma corrida!",
   },
   2: {
     label: "Abaixo do normal",
-    emoji: "🟡",
-    bg: "bg-lime-900/30",
-    border: "border-lime-500/40",
-    text: "text-lime-400",
-    badge: "bg-lime-500/20 text-lime-300 border-lime-500/30",
-    bar: "bg-lime-500",
-    barWidth: "w-2/5",
+    bgColor: "bg-semantic-lime/10",
+    textColor: "text-semantic-lime",
+    chipColor: "lime",
     description: "Preço favorável para sua corrida.",
   },
   3: {
     label: "Na média",
-    emoji: "🔵",
-    bg: "bg-blue-900/30",
-    border: "border-blue-500/40",
-    text: "text-blue-400",
-    badge: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-    bar: "bg-blue-500",
-    barWidth: "w-3/5",
+    bgColor: "bg-semantic-blue/10",
+    textColor: "text-semantic-blue",
+    chipColor: "blue",
     description: "Preço dentro do esperado.",
   },
   4: {
     label: "Acima do normal",
-    emoji: "🟠",
-    bg: "bg-orange-900/30",
-    border: "border-orange-500/40",
-    text: "text-orange-400",
-    badge: "bg-orange-500/20 text-orange-300 border-orange-500/30",
-    bar: "bg-orange-500",
-    barWidth: "w-4/5",
+    bgColor: "bg-semantic-orange/10",
+    textColor: "text-semantic-orange",
+    chipColor: "orange",
     description: "Considere aguardar um pouco.",
   },
   5: {
     label: "Muito acima do normal",
-    emoji: "🔴",
-    bg: "bg-red-900/30",
-    border: "border-red-500/40",
-    text: "text-red-400",
-    badge: "bg-red-500/20 text-red-300 border-red-500/30",
-    bar: "bg-red-500",
-    barWidth: "w-full",
+    bgColor: "bg-semantic-crimson/10",
+    textColor: "text-semantic-crimson",
+    chipColor: "crimson",
     description: "Alta demanda! Preço elevado no momento.",
   },
 };
 
 export default function PredictionResult({ result, origin, destination, date, time }: Props) {
-  const level = Math.max(1, Math.min(5, result.classificationLevel)) as 1 | 2 | 3 | 4 | 5;
+  const level = Math.max(1, Math.min(5, result.classificationLevel));
   const config = levelConfig[level];
 
   const formattedDate = new Date(`${date}T${time}`).toLocaleDateString("pt-BR", {
@@ -82,86 +74,68 @@ export default function PredictionResult({ result, origin, destination, date, ti
   });
 
   return (
-    <div className={`${config.bg} border ${config.border} rounded-2xl p-6 backdrop-blur-sm shadow-xl animate-fade-in`}>
-      {/* Header */}
+    <Card variant="glass" padding="md" className={`${config.bgColor} animate-fade-in`}>
       <div className="flex items-start justify-between mb-5">
         <div>
-          <p className="text-slate-400 text-xs uppercase tracking-wider font-medium mb-1">Previsão de Preço</p>
+          <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-1">Previsão de Preço</p>
           <div className="flex items-center gap-2">
-            <span className="text-2xl">{config.emoji}</span>
-            <h3 className={`text-xl font-bold ${config.text}`}>{config.label}</h3>
+            <h3 className={`text-xl font-display font-bold ${config.textColor}`}>{config.label}</h3>
           </div>
-          <p className="text-slate-400 text-sm mt-1">{config.description}</p>
+          <p className="text-on-surface-variant text-sm mt-1">{config.description}</p>
         </div>
-        <span className={`text-xs font-semibold px-3 py-1.5 rounded-full border ${config.badge}`}>
+        <Chip variant="soft" color={config.chipColor}>
           Nível {level}/5
-        </span>
+        </Chip>
       </div>
 
-      {/* Price Bar */}
       <div className="mb-5">
-        <div className="flex justify-between text-xs text-slate-500 mb-1.5">
-          <span>Muito baixo</span>
-          <span>Muito alto</span>
-        </div>
-        <div className="h-2.5 bg-slate-700/60 rounded-full overflow-hidden">
-          <div
-            className={`h-full ${config.bar} rounded-full transition-all duration-700`}
-            style={{ width: `${(level / 5) * 100}%` }}
-          />
-        </div>
-        <div className="flex justify-between mt-1">
-          {[1, 2, 3, 4, 5].map((l) => (
-            <div
-              key={l}
-              className={`w-2 h-2 rounded-full ${l <= level ? config.bar : "bg-slate-700"} transition-all`}
-            />
-          ))}
-        </div>
+        <Gauge value={level} />
       </div>
 
-      {/* Route Info */}
-      <div className="bg-slate-900/40 rounded-xl p-4 mb-4 flex flex-col gap-2">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-slate-500 w-4">📍</span>
-          <span className="text-slate-400 w-16 shrink-0">Origem:</span>
-          <span className="text-white font-medium truncate">{origin}</span>
+      <Card variant="section" padding="sm" className="mb-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-sm">
+            <svg className="w-4 h-4 text-secondary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span className="text-on-surface-variant w-16 shrink-0">Origem:</span>
+            <span className="text-on-surface font-medium truncate">{origin}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <svg className="w-4 h-4 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+            <span className="text-on-surface-variant w-16 shrink-0">Destino:</span>
+            <span className="text-on-surface font-medium truncate">{destination}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <svg className="w-4 h-4 text-on-surface-variant shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-on-surface-variant w-16 shrink-0">Quando:</span>
+            <span className="text-on-surface font-medium capitalize">{formattedDate} às {time}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-slate-500 w-4">🏁</span>
-          <span className="text-slate-400 w-16 shrink-0">Destino:</span>
-          <span className="text-white font-medium truncate">{destination}</span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-slate-500 w-4">🕐</span>
-          <span className="text-slate-400 w-16 shrink-0">Quando:</span>
-          <span className="text-white font-medium capitalize">{formattedDate} às {time}</span>
-        </div>
-      </div>
+      </Card>
 
-      {/* Reasoning */}
       <div className="mb-4">
-        <p className="text-slate-400 text-xs uppercase tracking-wider font-medium mb-2">Análise</p>
-        <p className="text-slate-300 text-sm leading-relaxed">{result.reasoning}</p>
+        <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-2">Análise</p>
+        <p className="text-on-surface text-sm leading-relaxed">{result.reasoning}</p>
       </div>
 
-      {/* Factors */}
       {result.factors && result.factors.length > 0 && (
         <div>
-          <p className="text-slate-400 text-xs uppercase tracking-wider font-medium mb-2">Fatores Identificados</p>
+          <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-2">Fatores Identificados</p>
           <div className="flex flex-wrap gap-2">
             {result.factors.map((factor, i) => (
-              <span
-                key={i}
-                className="text-xs px-3 py-1.5 rounded-full bg-slate-700/60 text-slate-300 border border-slate-600/40"
-              >
+              <Chip key={i} variant="default">
                 {factor}
-              </span>
+              </Chip>
             ))}
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }
-

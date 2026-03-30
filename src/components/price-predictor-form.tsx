@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useAction, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Loading } from "./ui/spinner";
 import PredictionResult from "./prediction-result";
 
 type PredictionData = {
@@ -49,98 +53,82 @@ export default function PricePredictorForm({ onLoginClick }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="bg-slate-800/60 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-sm shadow-xl">
-        <h2 className="text-white font-semibold text-lg mb-5 flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 text-xs">📍</span>
+      <Card variant="section" padding="md">
+        <h2 className="text-lg font-semibold text-on-surface mb-6 flex items-center gap-2">
+          <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+            <svg className="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </span>
           Detalhes da Corrida
         </h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-slate-400 text-sm font-medium">Origem</label>
-              <input
-                type="text"
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                placeholder="Ex: Av. Paulista, São Paulo"
-                className="bg-slate-900/80 border border-slate-600/50 text-white placeholder-slate-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all"
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-slate-400 text-sm font-medium">Destino</label>
-              <input
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                placeholder="Ex: Aeroporto de Congonhas"
-                className="bg-slate-900/80 border border-slate-600/50 text-white placeholder-slate-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all"
-                required
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <Input
+              type="text"
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value)}
+              label="Origem"
+              placeholder="Ex: Av. Paulista, São Paulo"
+              required
+            />
+            <Input
+              type="text"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              label="Destino"
+              placeholder="Ex: Aeroporto de Congonhas"
+              required
+            />
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-slate-400 text-sm font-medium">Data</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                min={today}
-                className="bg-slate-900/80 border border-slate-600/50 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all [color-scheme:dark]"
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-slate-400 text-sm font-medium">Horário</label>
-              <input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                className="bg-slate-900/80 border border-slate-600/50 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all [color-scheme:dark]"
-                required
-              />
-            </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <Input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              label="Data"
+              min={today}
+              required
+            />
+            <Input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              label="Horário"
+              required
+            />
           </div>
 
-          <button
+          <Button
             type="submit"
-            disabled={loading || !origin || !destination || !date || !time}
-            className="mt-2 w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-900/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            fullWidth
+            loading={loading}
+            disabled={!origin || !destination || !date || !time}
           >
-            {loading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Analisando corrida...
-              </>
-            ) : (
-              <>
-                <span>🔍</span>
-                Prever Preço
-              </>
-            )}
-          </button>
+            Prever Preço
+          </Button>
         </form>
-      </div>
+      </Card>
 
       {error && (
-        <div className="bg-red-900/30 border border-red-700/50 rounded-2xl p-4 text-red-300 text-sm text-center">
-          {error}
-        </div>
+        <Card variant="section" padding="sm">
+          <p className="text-semantic-crimson text-sm text-center font-medium">{error}</p>
+        </Card>
       )}
 
       {loading && (
-        <div className="bg-slate-800/60 border border-slate-700/50 rounded-2xl p-8 backdrop-blur-sm flex flex-col items-center gap-4">
-          <div className="relative">
-            <div className="w-16 h-16 rounded-full border-4 border-slate-700 border-t-violet-500 animate-spin"></div>
-            <div className="absolute inset-0 flex items-center justify-center text-2xl">🚗</div>
-          </div>
-          <div className="text-center">
-            <p className="text-white font-medium">Analisando dados históricos...</p>
-            <p className="text-slate-400 text-sm mt-1">Verificando padrões de preço, horário e condições</p>
-          </div>
-        </div>
+        <Card variant="glass" padding="lg">
+          <Loading
+            message="Analisando dados históricos..."
+            submessage="Verificando padrões de preço, horário e condições"
+          >
+            <svg className="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h8m-8 5h8m-4 7V4M6 9l-2 2m10-2l2 2" />
+            </svg>
+          </Loading>
+        </Card>
       )}
 
       {result && !loading && (
@@ -153,18 +141,17 @@ export default function PricePredictorForm({ onLoginClick }: Props) {
             time={time}
           />
           {loggedInUser === null && (
-            <div className="bg-slate-800/60 border border-violet-500/30 rounded-2xl p-5 backdrop-blur-sm flex items-center justify-between gap-4 animate-fade-in">
-              <div>
-                <p className="text-white font-medium text-sm">Salve seu histórico de consultas</p>
-                <p className="text-slate-400 text-xs mt-0.5">Crie uma conta gratuita para acessar suas previsões anteriores</p>
+            <Card variant="glass" padding="md">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-on-surface font-medium text-sm">Salve seu histórico de consultas</p>
+                  <p className="text-on-surface-variant text-xs mt-0.5">Crie uma conta gratuita para acessar suas previsões anteriores</p>
+                </div>
+                <Button variant="primary" size="sm" onClick={onLoginClick}>
+                  Entrar
+                </Button>
               </div>
-              <button
-                onClick={onLoginClick}
-                className="shrink-0 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg"
-              >
-                Entrar
-              </button>
-            </div>
+            </Card>
           )}
         </>
       )}
