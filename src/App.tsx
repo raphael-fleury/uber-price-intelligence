@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
-import { SignInForm } from "./SignInForm";
-import { SignOutButton } from "./SignOutButton";
+import { SignInForm } from "./components/sign-in-form";
+import { SignOutButton } from "./components/sign-out-button";
 import { Toaster } from "sonner";
-import PricePredictorForm from "./PricePredictorForm";
-import PredictionHistory from "./PredictionHistory";
+import PricePredictorForm from "./components/price-predictor-form";
+import PredictionHistory from "./components/prediction-history";
 
 export default function App() {
   const [showLogin, setShowLogin] = useState(false);

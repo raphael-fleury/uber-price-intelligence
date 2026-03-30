@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAction, useQuery } from "convex/react";
-import { api } from "../convex/_generated/api";
-import PredictionResult from "./PredictionResult";
+import { api } from "../../convex/_generated/api";
+import PredictionResult from "./prediction-result";
 
 type PredictionData = {
   classification: string;
