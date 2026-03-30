@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAction } from "convex/react";
+import { MapPin, Activity } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -63,10 +64,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
     <Card variant="section" padding="md">
       <h2 className="text-lg font-semibold text-on-surface mb-4 flex items-center gap-2">
         <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-          <svg className="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
+          <MapPin className="w-3.5 h-3.5 text-primary" />
         </span>
         Detalhes da Corrida
       </h2>
@@ -125,9 +123,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
             message="Analisando dados históricos..."
             submessage="Verificando padrões de preço, horário e condições"
           >
-            <svg className="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h8m-8 5h8m-4 7V4M6 9l-2 2m10-2l2 2" />
-            </svg>
+            <Activity className="w-7 h-7 text-primary" />
           </Loading>
         </div>
       )}

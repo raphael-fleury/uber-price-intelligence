@@ -1,3 +1,4 @@
+import { ArrowRight, MapPin, Clock } from "lucide-react";
 import { Card } from "./ui/card";
 import { Chip } from "./ui/chip";
 import { Gauge } from "./ui/gauge";
@@ -95,24 +96,17 @@ export default function PredictionResult({ result, origin, destination, date, ti
       <Card variant="section" padding="sm" className="mb-4">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-sm">
-            <svg className="w-4 h-4 text-secondary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+            <MapPin className="w-4 h-4 text-secondary shrink-0" />
             <span className="text-on-surface-variant w-16 shrink-0">Origem:</span>
             <span className="text-on-surface font-medium truncate">{origin}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <svg className="w-4 h-4 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
+            <ArrowRight className="w-4 h-4 text-primary shrink-0" />
             <span className="text-on-surface-variant w-16 shrink-0">Destino:</span>
             <span className="text-on-surface font-medium truncate">{destination}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <svg className="w-4 h-4 text-on-surface-variant shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <Clock className="w-4 h-4 text-on-surface-variant shrink-0" />
             <span className="text-on-surface-variant w-16 shrink-0">Quando:</span>
             <span className="text-on-surface font-medium capitalize">{formattedDate} às {time}</span>
           </div>

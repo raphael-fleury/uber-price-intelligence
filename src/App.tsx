@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ArrowLeft, Info, BarChart3, Car } from "lucide-react";
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { SignInForm } from "./components/sign-in-form";
@@ -27,9 +28,7 @@ export default function App() {
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
           <div className="w-9 h-9 rounded-md bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-sm">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h8m-8 5h8m-4 7V4m-6 9l-2 2m10-2l2 2m-4-4l2 2" />
-            </svg>
+            <Car className="w-5 h-5 text-white" />
           </div>
           <h2 className="text-lg font-display font-bold text-on-surface">RidePrice<span className="text-secondary">AI</span></h2>
         </button>
@@ -69,9 +68,7 @@ function LoginPage({ onBack }: { onBack: () => void }) {
         onClick={onBack}
         className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface text-sm mb-8 transition-colors"
       >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
+        <ArrowLeft className="w-4 h-4" />
         Voltar
       </button>
       <div className="text-center mb-8">
@@ -140,9 +137,7 @@ function PredictionLayout({ onLoginClick }: { onLoginClick: () => void }) {
             />
             <Card variant="glass" padding="md" className="flex flex-row items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <Info className="w-4 h-4 text-white" />
               </div>
               <div>
                 <p className="font-semibold text-on-surface text-sm">Quer mais precisão?</p>
@@ -153,11 +148,9 @@ function PredictionLayout({ onLoginClick }: { onLoginClick: () => void }) {
             </Card>
           </>
         ) : (
-          <Card variant="glass" padding="lg" className="hidden lg:flex flex-1 min-h-[300px] items-center justify-center">
+            <Card variant="glass" padding="lg" className="hidden lg:flex flex-1 min-h-[300px] items-center justify-center">
             <div className="text-center text-on-surface-variant">
-              <svg className="w-12 h-12 mx-auto mb-4 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+              <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-30" />
               <p className="text-sm">Preencha o formulário ao lado para ver a previsão</p>
             </div>
           </Card>

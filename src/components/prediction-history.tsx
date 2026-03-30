@@ -1,4 +1,5 @@
 import { useQuery } from "convex/react";
+import { Clock, Circle, MapPin } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import { Card } from "./ui/card";
 import { Chip } from "./ui/chip";
@@ -30,9 +31,7 @@ export default function PredictionHistory() {
     <Card variant="section" padding="md">
       <h2 className="text-lg font-semibold text-on-surface mb-5 flex items-center gap-2">
         <span className="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center">
-          <svg className="w-3.5 h-3.5 text-on-surface-variant" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <Clock className="w-3.5 h-3.5 text-on-surface-variant" />
         </span>
         Consultas Recentes
       </h2>
@@ -48,13 +47,9 @@ export default function PredictionHistory() {
               <div className="flex items-center justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 text-sm text-on-surface font-medium truncate">
-                    <svg className="w-4 h-4 text-secondary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    </svg>
+                    <MapPin className="w-4 h-4 text-secondary shrink-0" />
                     <span className="truncate">{p.origin}</span>
-                    <svg className="w-3 h-3 text-on-surface-variant shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
+                    <Circle className="w-3 h-3 text-on-surface-variant shrink-0" />
                     <span className="truncate">{p.destination}</span>
                   </div>
                   <p className="text-on-surface-variant text-xs mt-1">{formattedDate} às {p.time}</p>
