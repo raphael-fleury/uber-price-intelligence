@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { ArrowLeft, Info, BarChart3, Car } from "lucide-react";
-import { Authenticated, Unauthenticated, useQuery } from "convex/react";
+import { ArrowLeft, Info, BarChart3 } from "lucide-react";
+import { Authenticated, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { SignInForm } from "./components/sign-in-form";
-import { SignOutButton } from "./components/sign-out-button";
 import { Toaster } from "sonner";
 import PricePredictorForm from "./components/price-predictor-form";
 import PredictionResult from "./components/prediction-result";
 import PredictionHistory from "./components/prediction-history";
 import { Card } from "./components/ui/card";
+import Header from "./components/header";
 
 type PredictionData = {
   classification: string;
@@ -22,30 +22,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-surface">
-      <header className="sticky top-0 z-10 bg-surface-lowest/80 backdrop-blur-sm h-16 flex justify-between items-center px-6 shadow-[0_1px_0_0_rgba(0,51,77,0.05)]">
-        <button
-          onClick={() => setShowLogin(false)}
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-        >
-          <div className="w-9 h-9 rounded-md bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-sm">
-            <Car className="w-5 h-5 text-white" />
-          </div>
-          <h2 className="text-lg font-display font-bold text-on-surface">RidePrice<span className="text-secondary">AI</span></h2>
-        </button>
-        <Unauthenticated>
-          {!showLogin && (
-            <button
-              onClick={() => setShowLogin(true)}
-              className="text-sm text-secondary font-medium hover:text-primary transition-colors"
-            >
-              Entrar
-            </button>
-          )}
-        </Unauthenticated>
-        <Authenticated>
-          <SignOutButton />
-        </Authenticated>
-      </header>
+      <Header
+        showLogin={showLogin}
+        onLoginClick={() => setShowLogin(true)}
+        onLogoClick={() => setShowLogin(false)}
+      />
 
       <main className="flex-1 flex flex-col items-center justify-start pt-12 pb-16 px-4 sm:px-6">
         <div className="w-full max-w-6xl mx-auto flex flex-col gap-10">
