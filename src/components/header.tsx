@@ -18,7 +18,7 @@ export default function Header({ showLogin, onLoginClick, onLogoClick }: HeaderP
         <div className="w-9 h-9 rounded-md bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-sm">
           <Car className="w-5 h-5 text-white" />
         </div>
-        <h2 className="text-lg font-display font-bold text-on-surface">RidePrice<span className="text-secondary">AI</span></h2>
+        <h2 className="text-lg font-display font-bold text-on-surface">Uber Price Intelligence<span className="text-secondary">AI</span></h2>
       </button>
       <Unauthenticated>
         {!showLogin && (
