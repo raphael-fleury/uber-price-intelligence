@@ -5,7 +5,16 @@ import { SignInForm } from "./components/sign-in-form";
 import { SignOutButton } from "./components/sign-out-button";
 import { Toaster } from "sonner";
 import PricePredictorForm from "./components/price-predictor-form";
+import PredictionResult from "./components/prediction-result";
 import PredictionHistory from "./components/prediction-history";
+import { Card } from "./components/ui/card";
+
+type PredictionData = {
+  classification: string;
+  classificationLevel: number;
+  reasoning: string;
+  factors: string[];
+};
 
 export default function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -39,8 +48,8 @@ export default function App() {
         </Authenticated>
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-start pt-12 pb-16">
-        <div className="w-full max-w-2xl mx-auto flex flex-col gap-10">
+      <main className="flex-1 flex flex-col items-center justify-start pt-12 pb-16 px-4 sm:px-6">
+        <div className="w-full max-w-6xl mx-auto flex flex-col gap-10">
           {showLogin ? (
             <LoginPage onBack={() => setShowLogin(false)} />
           ) : (
@@ -55,7 +64,7 @@ export default function App() {
 
 function LoginPage({ onBack }: { onBack: () => void }) {
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in max-w-md mx-auto">
       <button
         onClick={onBack}
         className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface text-sm mb-8 transition-colors"
@@ -98,11 +107,62 @@ function Content({ onLoginClick }: { onLoginClick: () => void }) {
         </p>
       </div>
 
-      <PricePredictorForm onLoginClick={onLoginClick} />
+      <PredictionLayout onLoginClick={onLoginClick} />
 
       <Authenticated>
         <PredictionHistory />
       </Authenticated>
     </>
+  );
+}
+
+function PredictionLayout({ onLoginClick }: { onLoginClick: () => void }) {
+  const [prediction, setPrediction] = useState<{
+    data: PredictionData;
+    origin: string;
+    destination: string;
+    date: string;
+    time: string;
+  } | null>(null);
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <PricePredictorForm onPrediction={setPrediction} />
+      <div className="flex flex-col gap-6">
+        {prediction ? (
+          <>
+            <PredictionResult
+              result={prediction.data}
+              origin={prediction.origin}
+              destination={prediction.destination}
+              date={prediction.date}
+              time={prediction.time}
+            />
+            <Card variant="glass" padding="md" className="flex flex-row items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-semibold text-on-surface text-sm">Quer mais precisão?</p>
+                <p className="text-xs text-on-surface-variant mt-1">
+                  <button onClick={onLoginClick} className="text-secondary font-medium hover:underline">Crie uma conta</button> para monitorar suas rotas favoritas e receber alertas de volatilidade em tempo real.
+                </p>
+              </div>
+            </Card>
+          </>
+        ) : (
+          <Card variant="glass" padding="lg" className="hidden lg:flex flex-1 min-h-[300px] items-center justify-center">
+            <div className="text-center text-on-surface-variant">
+              <svg className="w-12 h-12 mx-auto mb-4 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <p className="text-sm">Preencha o formulário ao lado para ver a previsão</p>
+            </div>
+          </Card>
+        )}
+      </div>
+    </div>
   );
 }
