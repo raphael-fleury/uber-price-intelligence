@@ -2,15 +2,16 @@ import { Authenticated, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import PredictionLayout from "../components/prediction-layout";
 import PredictionHistory from "../components/prediction-history";
+import { features } from "../config/features";
 
 type PredictPageProps = {
   onLoginClick: () => void;
 };
 
 export default function PredictPage({ onLoginClick }: PredictPageProps) {
-  const loggedInUser = useQuery(api.auth.loggedInUser);
+  const loggedInUser = features.auth ? useQuery(api.auth.loggedInUser) : null;
 
-  if (loggedInUser === undefined) {
+  if (features.auth && loggedInUser === undefined) {
     return (
       <div className="flex justify-center items-center py-20">
         <div className="w-10 h-10 rounded-full border-2 border-surface-variant border-t-primary animate-spin"></div>
@@ -31,9 +32,11 @@ export default function PredictPage({ onLoginClick }: PredictPageProps) {
 
       <PredictionLayout onLoginClick={onLoginClick} />
 
-      <Authenticated>
-        <PredictionHistory />
-      </Authenticated>
+      {features.auth && (
+        <Authenticated>
+          <PredictionHistory />
+        </Authenticated>
+      )}
     </>
   );
 }

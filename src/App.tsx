@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 import Header from "./components/header";
 import LoginPage from "./screens/login-page";
 import PredictPage from "./screens/predict-page";
+import { features } from "./config/features";
 
 export default function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -17,10 +18,10 @@ export default function App() {
 
       <main className="flex-1 flex flex-col items-center justify-start pt-12 pb-16 px-4 sm:px-6">
         <div className="w-full max-w-6xl mx-auto flex flex-col gap-10">
-          {showLogin ? (
+          {features.auth && showLogin ? (
             <LoginPage onBack={() => setShowLogin(false)} />
           ) : (
-            <PredictPage onLoginClick={() => setShowLogin(true)} />
+            <PredictPage onLoginClick={() => features.auth && setShowLogin(true)} />
           )}
         </div>
       </main>

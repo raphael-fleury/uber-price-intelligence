@@ -1,6 +1,7 @@
 import { Authenticated, Unauthenticated } from "convex/react";
 import { Car } from "lucide-react";
 import { SignOutButton } from "./sign-out-button";
+import { features } from "../config/features";
 
 type HeaderProps = {
   showLogin: boolean;
@@ -20,19 +21,23 @@ export default function Header({ showLogin, onLoginClick, onLogoClick }: HeaderP
         </div>
         <h2 className="text-lg font-display font-bold text-on-surface">Uber Price Intelligence<span className="text-secondary">AI</span></h2>
       </button>
-      <Unauthenticated>
-        {!showLogin && (
-          <button
-            onClick={onLoginClick}
-            className="text-sm text-secondary font-medium hover:text-primary transition-colors"
-          >
-            Entrar
-          </button>
-        )}
-      </Unauthenticated>
-      <Authenticated>
-        <SignOutButton />
-      </Authenticated>
+      {features.auth && (
+        <Unauthenticated>
+          {!showLogin && (
+            <button
+              onClick={onLoginClick}
+              className="text-sm text-secondary font-medium hover:text-primary transition-colors"
+            >
+              Entrar
+            </button>
+          )}
+        </Unauthenticated>
+      )}
+      {features.auth && (
+        <Authenticated>
+          <SignOutButton />
+        </Authenticated>
+      )}
     </header>
   );
 }

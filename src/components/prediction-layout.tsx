@@ -3,6 +3,7 @@ import { BarChart3, Info } from "lucide-react";
 import { Card } from "./ui";
 import PredictionResult from "./prediction-result";
 import PricePredictorForm from "./price-predictor-form";
+import { features } from "../config/features";
 
 type PredictionData = {
   classification: string;
@@ -33,17 +34,19 @@ export default function PredictionLayout({ onLoginClick }: { onLoginClick: () =>
               date={prediction.date}
               time={prediction.time}
             />
-            <Card variant="glass" padding="md" className="flex flex-row items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
-                <Info className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <p className="font-semibold text-on-surface text-sm">Quer mais precisão?</p>
-                <p className="text-xs text-on-surface-variant mt-1">
-                  <button onClick={onLoginClick} className="text-secondary font-medium hover:underline">Crie uma conta</button> para monitorar suas rotas favoritas e receber alertas de volatilidade em tempo real.
-                </p>
-              </div>
-            </Card>
+            {features.auth && (
+              <Card variant="glass" padding="md" className="flex flex-row items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+                  <Info className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-on-surface text-sm">Quer mais precisão?</p>
+                  <p className="text-xs text-on-surface-variant mt-1">
+                    <button onClick={onLoginClick} className="text-secondary font-medium hover:underline">Crie uma conta</button> para monitorar suas rotas favoritas e receber alertas de volatilidade em tempo real.
+                  </p>
+                </div>
+              </Card>
+            )}
           </>
         ) : (
             <Card variant="glass" padding="lg" className="hidden lg:flex flex-1 min-h-[300px] items-center justify-center">
