@@ -45,8 +45,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
   const {
     register,
     handleSubmit,
-    watch,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<PredictionFormData>({
     resolver: zodResolver(predictionSchema),
     defaultValues: {
@@ -56,11 +55,6 @@ export default function PricePredictorForm({ onPrediction }: Props) {
       time: "",
     },
   });
-
-  const origin = watch("origin");
-  const destination = watch("destination");
-  const date = watch("date");
-  const time = watch("time");
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -95,7 +89,6 @@ export default function PricePredictorForm({ onPrediction }: Props) {
           <Input
             type="text"
             label="Origem"
-            value={origin}
             error={errors.origin?.message}
             placeholder="Ex: Av. Paulista, São Paulo"
             {...register("origin")}
@@ -103,7 +96,6 @@ export default function PricePredictorForm({ onPrediction }: Props) {
           <Input
             type="text"
             label="Destino"
-            value={destination}
             error={errors.destination?.message}
             placeholder="Ex: Aeroporto de Congonhas"
             {...register("destination")}
@@ -111,7 +103,6 @@ export default function PricePredictorForm({ onPrediction }: Props) {
           <Input
             type="date"
             label="Data"
-            value={date}
             min={today}
             error={errors.date?.message}
             {...register("date")}
@@ -119,7 +110,6 @@ export default function PricePredictorForm({ onPrediction }: Props) {
           <Input
             type="time"
             label="Horário"
-            value={time}
             error={errors.time?.message}
             {...register("time")}
           />
@@ -129,7 +119,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
           type="submit"
           fullWidth
           loading={loading}
-          disabled={!origin || !destination || !date || !time}
+          disabled={!isValid}
         >
           Prever Preço
         </Button>
