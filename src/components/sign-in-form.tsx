@@ -97,14 +97,6 @@ export function SignInForm() {
           </button>
         </div>
       </form>
-      <div className="flex items-center justify-center my-5">
-        <div className="h-px bg-outline/20 flex-1"></div>
-        <span className="mx-4 text-on-surface-variant text-sm">ou</span>
-        <div className="h-px bg-outline/20 flex-1"></div>
-      </div>
-      <Button variant="secondary" fullWidth onClick={() => void signIn("anonymous")}>
-        Continuar como visitante
-      </Button>
     </div>
   );
 }
