@@ -1,11 +1,23 @@
 import { useState } from "react";
 import { useAction } from "convex/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { MapPin, Activity } from "lucide-react";
+import { z } from "zod";
 import { api } from "../../convex/_generated/api";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Loading } from "./ui/spinner";
+
+const predictionSchema = z.object({
+  origin: z.string().min(1, "Informe a origem"),
+  destination: z.string().min(1, "Informe o destino"),
+  date: z.string().min(1, "Informe a data"),
+  time: z.string().min(1, "Informe o horário"),
+});
+
+type PredictionFormData = z.infer<typeof predictionSchema>;
 
 type PredictionData = {
   classification: string;
@@ -25,40 +37,50 @@ type Props = {
 };
 
 export default function PricePredictorForm({ onPrediction }: Props) {
-  const [origin, setOrigin] = useState("");
-  const [destination, setDestination] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const predictPrice = useAction(api.predictions.predictPrice);
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<PredictionFormData>({
+    resolver: zodResolver(predictionSchema),
+    defaultValues: {
+      origin: "",
+      destination: "",
+      date: "",
+      time: "",
+    },
+  });
+
+  const origin = watch("origin");
+  const destination = watch("destination");
+  const date = watch("date");
+  const time = watch("time");
+
   const today = new Date().toISOString().split("T")[0];
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!origin || !destination || !date || !time) return;
-
+  const onSubmit = async (data: PredictionFormData) => {
     setLoading(true);
-    setError(null);
+    setServerError(null);
 
     try {
-      const data = await predictPrice({ origin, destination, date, time });
+      const result = await predictPrice(data);
       onPrediction({
-        data: data as PredictionData,
-        origin,
-        destination,
-        date,
-        time,
+        data: result as PredictionData,
+        ...data,
       });
     } catch (err) {
-      setError("Erro ao processar a previsão. Tente novamente.");
+      setServerError("Erro ao processar a previsão. Tente novamente.");
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <Card variant="section" padding="md">
@@ -68,38 +90,38 @@ export default function PricePredictorForm({ onPrediction }: Props) {
         </span>
         Detalhes da Corrida
       </h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
           <Input
             type="text"
-            value={origin}
-            onChange={(e) => setOrigin(e.target.value)}
             label="Origem"
+            value={origin}
+            error={errors.origin?.message}
             placeholder="Ex: Av. Paulista, São Paulo"
-            required
+            {...register("origin")}
           />
           <Input
             type="text"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
             label="Destino"
+            value={destination}
+            error={errors.destination?.message}
             placeholder="Ex: Aeroporto de Congonhas"
-            required
+            {...register("destination")}
           />
           <Input
             type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
             label="Data"
+            value={date}
             min={today}
-            required
+            error={errors.date?.message}
+            {...register("date")}
           />
           <Input
             type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
             label="Horário"
-            required
+            value={time}
+            error={errors.time?.message}
+            {...register("time")}
           />
         </div>
 
@@ -113,8 +135,8 @@ export default function PricePredictorForm({ onPrediction }: Props) {
         </Button>
       </form>
 
-      {error && (
-        <p className="text-semantic-crimson text-sm text-center font-medium mt-4">{error}</p>
+      {serverError && (
+        <p className="text-semantic-crimson text-sm text-center font-medium mt-4">{serverError}</p>
       )}
 
       {loading && (
