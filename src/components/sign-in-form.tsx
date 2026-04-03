@@ -15,7 +15,11 @@ const signInSchema = z.object({
 
 type SignInFormData = z.infer<typeof signInSchema>;
 
-export function SignInForm() {
+type SignInFormProps = {
+  onSuccess: () => void;
+};
+
+export function SignInForm({ onSuccess }: SignInFormProps) {
   const { signIn } = useAuthActions();
   const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
   const [submitting, setSubmitting] = useState(false);
@@ -38,6 +42,7 @@ export function SignInForm() {
 
     try {
       await signIn("password", formData);
+      onSuccess();
     } catch (error: any) {
       let toastTitle = "";
       if (error.message.includes("Invalid password")) {

@@ -14,7 +14,7 @@ export default function LoginPage({ onBack }: LoginPageProps) {
         <p className="text-on-surface-variant">Entre para salvar seu histórico de consultas</p>
       </div>
       <div className="bg-surface-variant/60 backdrop-blur-[20px] border border-outline/10 rounded-container p-8 max-w-md mx-auto">
-        <SignInForm />
+        <SignInForm onSuccess={onBack} />
       </div>
       <button
         onClick={onBack}
