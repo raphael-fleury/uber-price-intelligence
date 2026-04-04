@@ -25,7 +25,10 @@ export const LocationPicker = ({ query, results, loading, handleSelect }: Locati
             className="w-full px-4 py-3 text-left text-sm hover:bg-surface-variant flex items-start gap-2"
           >
             <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
-            <span className="text-on-surface">{result.display_name}</span>
+            <div className="flex flex-col">
+              <span className="text-on-surface">{result.name}</span>
+              <span className="text-outline">{result.display_name.replace(result.name + ", ", "")}</span>
+            </div>
           </button>
         </li>
       ))
