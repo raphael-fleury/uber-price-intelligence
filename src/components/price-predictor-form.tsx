@@ -48,6 +48,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
     register,
     watch,
     setValue,
+    reset,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<PredictionFormData>({
@@ -92,7 +93,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
         </span>
         Detalhes da Corrida
       </h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 items-between">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
           <Input
             type="text"
@@ -125,14 +126,23 @@ export default function PricePredictorForm({ onPrediction }: Props) {
           />
         </div>
 
-        <Button
-          type="submit"
-          fullWidth
-          loading={loading}
-          disabled={!isValid}
-        >
-          Prever Preço
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => reset()}
+          >
+            Limpar
+          </Button>
+          <Button
+            type="submit"
+            fullWidth
+            loading={loading}
+            disabled={!isValid}
+          >
+            Prever Preço
+          </Button>
+        </div>
       </form>
 
       {serverError && (
