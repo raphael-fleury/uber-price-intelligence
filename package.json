@@ -13,8 +13,10 @@
   "dependencies": {
     "@convex-dev/auth": "^0.0.80",
     "@hookform/resolvers": "^5.2.2",
+    "@rehookify/datepicker": "^6.6.8",
     "clsx": "^2.1.1",
     "convex": "^1.31.2",
+    "date-fns": "^4.1.0",
     "lucide-react": "^1.7.0",
     "openai": "^6.33.0",
     "react": "^19.2.1",
