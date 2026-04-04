@@ -10,6 +10,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Loading } from "./ui/spinner";
 import { DateInput } from "./ui/date-input";
+import { TimeInput } from "./ui/time-input";
 
 const predictionSchema = z.object({
   origin: z.string().min(1, "Informe a origem"),
@@ -107,8 +108,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
             error={errors.date?.message}
             {...register("date")}
           />
-          <Input
-            type="time"
+          <TimeInput
             label="Horário"
             error={errors.time?.message}
             {...register("time")}
