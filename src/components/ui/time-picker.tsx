@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { Clock } from "lucide-react";
 import { clsx } from "clsx";
 
 interface TimePickerProps {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BarChart3, Info } from "lucide-react";
-import { Card } from "./ui";
+import { Card } from "./ui/card";
 import PredictionResult from "./prediction-result";
 import PricePredictorForm from "./price-predictor-form";
 import { features } from "../config/features";
