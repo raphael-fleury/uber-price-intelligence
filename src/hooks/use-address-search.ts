@@ -1,17 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-
-export interface AddressResult {
-  place_id: number;
-  name: string;
-  display_name: string;
-  lat: string;
-  lon: string;
-  importance: number;
-}
+import { Location } from "@/schemas/location.schema";
 
 export function useAddressSearch() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<AddressResult[]>([]);
+  const [results, setResults] = useState<Location[]>([]);
   const [loading, setLoading] = useState(false);
 
   const search = useCallback(async (searchQuery: string) => {
