@@ -9,6 +9,7 @@ import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Loading } from "./ui/spinner";
+import { DateInput } from "./ui/date-input";
 
 const predictionSchema = z.object({
   origin: z.string().min(1, "Informe a origem"),
@@ -100,8 +101,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
             placeholder="Ex: Aeroporto de Congonhas"
             {...register("destination")}
           />
-          <Input
-            type="date"
+          <DateInput
             label="Data"
             min={today}
             error={errors.date?.message}
