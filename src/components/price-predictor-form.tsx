@@ -7,10 +7,10 @@ import { z } from "zod";
 import { api } from "../../convex/_generated/api";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { Loading } from "./ui/spinner";
 import { DateInput } from "./ui/date-input";
 import { TimeInput } from "./ui/time-input";
+import { AddressInput } from "./ui/address-input";
 
 const predictionSchema = z.object({
   origin: z.string().min(1, "Informe a origem"),
@@ -95,19 +95,21 @@ export default function PricePredictorForm({ onPrediction }: Props) {
       </h2>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 items-between">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-          <Input
-            type="text"
+          <AddressInput
             label="Origem"
-            error={errors.origin?.message}
             placeholder="Ex: Av. Paulista, São Paulo"
+            value={watch("origin")}
             {...register("origin")}
+            error={errors.origin?.message}
+            onChange={(value) => updateValue("origin")(value as string)}
           />
-          <Input
-            type="text"
+          <AddressInput
             label="Destino"
-            error={errors.destination?.message}
             placeholder="Ex: Aeroporto de Congonhas"
+            value={watch("destination")}
             {...register("destination")}
+            error={errors.destination?.message}
+            onChange={(value) => updateValue("destination")(value as string)}
           />
           <DateInput
             label="Data"

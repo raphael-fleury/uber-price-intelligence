@@ -1,13 +1,15 @@
-import { InputHTMLAttributes, forwardRef, LabelHTMLAttributes } from "react";
+import { InputHTMLAttributes, forwardRef } from "react";
 import { clsx } from "clsx";
+import { X } from "lucide-react";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  handleClear?: () => void;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, id, ...props }, ref) => {
+  ({ className, label, error, id, handleClear, ...props }, ref) => {
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
     return (
@@ -22,7 +24,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <div
           className={clsx(
-            "bg-surface-low rounded-b-md border-b-2 border-transparent focus-within:border-primary focus-within:bg-surface transition-all",
+            "bg-surface-low rounded-b-md border-b-2 border-transparent focus-within:border-primary focus-within:bg-surface transition-all relative",
             error && "border-semantic-crimson focus-within:border-semantic-crimson"
           )}
         >
@@ -35,6 +37,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             )}
             {...props}
           />
+          {handleClear && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
         {error && (
           <p className="text-xs text-semantic-crimson mt-1">{error}</p>
