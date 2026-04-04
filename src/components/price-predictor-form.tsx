@@ -46,6 +46,8 @@ export default function PricePredictorForm({ onPrediction }: Props) {
 
   const {
     register,
+    watch,
+    setValue,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<PredictionFormData>({
@@ -60,6 +62,10 @@ export default function PricePredictorForm({ onPrediction }: Props) {
 
   const today = new Date().toISOString().split("T")[0];
 
+  const updateValue = (field: keyof PredictionFormData) => (value: string) => {
+    setValue(field, value, { shouldValidate: true, shouldDirty: true });
+  }
+  
   const onSubmit = async (data: PredictionFormData) => {
     setLoading(true);
     setServerError(null);
@@ -105,11 +111,15 @@ export default function PricePredictorForm({ onPrediction }: Props) {
           <DateInput
             label="Data"
             min={today}
+            value={watch("date")}
+            setValue={(value) => updateValue("date")(value)}
             error={errors.date?.message}
             {...register("date")}
           />
           <TimeInput
             label="Horário"
+            value={watch("time")}
+            setValue={(value) => updateValue("time")(value)}
             error={errors.time?.message}
             {...register("time")}
           />

@@ -2,13 +2,17 @@ import { useState } from "react";
 import { Input, InputProps } from "./input";
 import { DatePicker } from "./date-picker";
 
-interface DateInputProps extends Omit<InputProps, "type"> {}
+type DateInputProps = InputProps & {
+  value: string;
+  setValue: (date: string) => void;
+};
 
-export function DateInput(props: DateInputProps) {
+export function DateInput({ value, setValue, ...props }: DateInputProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
 
   const handleSelectDate = (dates: Date[]) => {
+    setValue(dates[0].toISOString().split("T")[0]);
     setSelectedDates(dates);
     setIsCalendarOpen(false);
   }
@@ -20,7 +24,7 @@ export function DateInput(props: DateInputProps) {
     <div>
       <Input
         type="date"
-        value={selectedDates[0] ? selectedDates[0].toISOString().split("T")[0] : ""}
+        value={value}
         placeholder="Selecione uma data"
         onClick={() => setIsCalendarOpen(true)}
         className="[&::-webkit-calendar-picker-indicator]:hidden"

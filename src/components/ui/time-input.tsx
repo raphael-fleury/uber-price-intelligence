@@ -3,15 +3,15 @@ import { Input, InputProps } from "./input";
 import { TimePicker } from "./time-picker";
 
 type TimeInputProps = InputProps & {
-  value?: string;
+  value: string;
+  setValue: (time: string) => void;
 };
 
-export function TimeInput({ value = "", ...props }: TimeInputProps) {
+export function TimeInput({ value, setValue, ...props }: TimeInputProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [internalValue, setInternalValue] = useState(value);
 
   const handleSelectTime = (time: string) => {
-    setInternalValue(time);
+    setValue(time);
     setIsOpen(false);
   };
 
@@ -19,7 +19,7 @@ export function TimeInput({ value = "", ...props }: TimeInputProps) {
     <div className="relative">
       <Input
         type="time"
-        value={internalValue}
+        value={value}
         placeholder="Selecione um horário"
         onClick={() => setIsOpen(true)}
         className="[&::-webkit-calendar-picker-indicator]:hidden"
@@ -29,7 +29,7 @@ export function TimeInput({ value = "", ...props }: TimeInputProps) {
       {isOpen && (
         <div className="absolute top-full left-0 mt-1 z-20">
           <TimePicker
-            value={internalValue}
+            value={value}
             onChange={handleSelectTime}
             onClose={() => setIsOpen(false)}
           />
