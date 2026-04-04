@@ -23,6 +23,7 @@ export function DateInput(props: DateInputProps) {
         value={selectedDates[0] ? selectedDates[0].toISOString().split("T")[0] : ""}
         placeholder="Selecione uma data"
         onClick={() => setIsCalendarOpen(true)}
+        className="[&::-webkit-calendar-picker-indicator]:hidden"
         {...props}
       />
 
