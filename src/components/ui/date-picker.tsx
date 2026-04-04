@@ -9,11 +9,13 @@ interface DatePickerProps {
   selectedDates: Date[];
   onDatesChange: (dates: Date[]) => void;
   onClose?: () => void;
+  minDate?: Date;
+  maxDate?: Date;
 }
 
 const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
-export const DatePicker = ({ selectedDates, onDatesChange, onClose }: DatePickerProps) => {
+export const DatePicker = ({ selectedDates, onDatesChange, onClose, minDate, maxDate }: DatePickerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [offsetDate, setOffsetDate] = React.useState<Date>(new Date());
 
@@ -32,7 +34,11 @@ export const DatePicker = ({ selectedDates, onDatesChange, onClose }: DatePicker
     },
     offsetDate,
     onOffsetChange: setOffsetDate,
-    dates: { toggle: true },
+    dates: {
+      toggle: true,
+      minDate,
+      maxDate,
+    },
   });
 
   const handleDayClick = (dpDay: any) => {
@@ -57,26 +63,37 @@ export const DatePicker = ({ selectedDates, onDatesChange, onClose }: DatePicker
   const { days } = calendars[0];
   const monthName = format(offsetDate, "MMMM yyyy", { locale: ptBR });
 
+  const prevButton = subtractOffset({ months: 1 });
+  const nextButton = addOffset({ months: 1 });
+
   return (
     <div ref={containerRef} className="animate-fade-in bg-surface-lowest border border-outline/20 rounded-container shadow-lg p-4 w-[320px] absolute z-10">
       <div className="flex items-center justify-between mb-4">
-        <button
-          {...subtractOffset({ months: 1 })}
-          className="p-1.5 hover:bg-surface-variant rounded-full transition-colors"
-          aria-label="Mês anterior"
-        >
-          <ChevronLeft className="w-5 h-5 text-on-surface" />
-        </button>
+        {prevButton.disabled ? (
+          <div className="w-9" />
+        ) : (
+          <button
+            {...prevButton}
+            className="p-1.5 hover:bg-surface-variant rounded-full transition-colors"
+            aria-label="Mês anterior"
+          >
+            <ChevronLeft className="w-5 h-5 text-on-surface" />
+          </button>
+        )}
         <span className="font-semibold text-on-surface capitalize">
           {monthName}
         </span>
-        <button
-          {...addOffset({ months: 1 })}
-          className="p-1.5 hover:bg-surface-variant rounded-full transition-colors"
-          aria-label="Próximo mês"
-        >
-          <ChevronRight className="w-5 h-5 text-on-surface" />
-        </button>
+        {nextButton.disabled ? (
+          <div className="w-9" />
+        ) : (
+          <button
+            {...nextButton}
+            className="p-1.5 hover:bg-surface-variant rounded-full transition-colors"
+            aria-label="Próximo mês"
+          >
+            <ChevronRight className="w-5 h-5 text-on-surface" />
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-2">
@@ -94,20 +111,24 @@ export const DatePicker = ({ selectedDates, onDatesChange, onClose }: DatePicker
         {days.map((dpDay) => {
           const isSelected = dpDay.selected;
           const isToday = dpDay.now;
-          const date = dpDay.$date.toISOString().split("T")[0]
+          const isDisabled = dpDay.disabled;
+          const date = dpDay.$date.toISOString().split("T")[0];
 
           return (
             <div key={date} className="aspect-square flex items-center justify-center">
               {dpDay.inCurrentMonth ? (
                 <button
                   type="button"
-                  onClick={() => handleDayClick(dpDay)}
+                  onClick={() => !isDisabled && handleDayClick(dpDay)}
+                  disabled={isDisabled}
                   className={clsx(
                     "w-8 h-8 text-sm rounded-full flex items-center justify-center transition-all",
-                    isSelected
+                    isSelected && !isDisabled
                       ? "bg-primary text-white font-semibold"
+                      : isDisabled
+                      ? "text-on-surface-variant/40 cursor-not-allowed"
                       : "hover:bg-surface-variant text-on-surface",
-                    isToday && !isSelected && "border border-primary"
+                    isToday && !isSelected && !isDisabled && "border border-primary"
                   )}
                 >
                   {dpDay.day}

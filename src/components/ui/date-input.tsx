@@ -1,4 +1,3 @@
-import { useDatePicker } from "@rehookify/datepicker";
 import { useState } from "react";
 import { Input, InputProps } from "./input";
 import { DatePicker } from "./date-picker";
@@ -14,6 +13,9 @@ export function DateInput(props: DateInputProps) {
     setIsCalendarOpen(false);
   }
 
+  const minDate = props.min === undefined ? undefined : new Date(props.min);
+  const maxDate = props.max === undefined ? undefined : new Date(props.max);
+
   return (
     <div>
       <Input
@@ -28,6 +30,9 @@ export function DateInput(props: DateInputProps) {
         <DatePicker
           selectedDates={selectedDates}
           onDatesChange={handleSelectDate}
+          onClose={() => setIsCalendarOpen(false)}
+          minDate={minDate}
+          maxDate={maxDate}
         />
       )}
     </div>
