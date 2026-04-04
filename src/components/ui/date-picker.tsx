@@ -123,9 +123,8 @@ export const DatePicker = ({ selectedDates, onDatesChange, onClose, minDate, max
                   disabled={isDisabled}
                   className={clsx(
                     "w-8 h-8 text-sm rounded-full flex items-center justify-center transition-all",
-                    isSelected && !isDisabled
-                      ? "bg-primary text-white font-semibold"
-                      : isDisabled
+                    isSelected && !isDisabled && "bg-primary text-white font-semibold",
+                    isDisabled
                       ? "text-on-surface-variant/40 cursor-not-allowed"
                       : "hover:bg-surface-variant text-on-surface",
                     isToday && !isSelected && !isDisabled && "border border-primary"
