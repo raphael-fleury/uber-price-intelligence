@@ -15,8 +15,6 @@ export function AddressInput({ value, setValue, ...params }: AddressInputProps) 
   const { query, setQuery, results, loading } = useAddressSearch();
   const showResults = query.length >= 3 && results.length > 0;
 
-  console.log({ query, value })
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {

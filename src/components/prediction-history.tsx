@@ -19,15 +19,7 @@ export default function PredictionHistory() {
       </h2>
       <div className="flex flex-col gap-3">
         {predictions.map((p) => (
-          <PredictionHistoryItem
-            key={p._id}
-            origin={p.origin}
-            destination={p.destination}
-            date={p.date}
-            time={p.time}
-            classification={p.classification}
-            classificationLevel={p.classificationLevel}
-          />
+          <PredictionHistoryItem key={p._id} prediction={p} />
         ))}
       </div>
     </Card>

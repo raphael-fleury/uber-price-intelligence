@@ -41,7 +41,6 @@ export default function PricePredictorForm({ onPrediction }: Props) {
 
   function updateValue<T>(field: keyof PredictionFormData) {
     return (value: T) => {
-      console.log({ field, value })
       setValue(field, value as any, { shouldValidate: true, shouldDirty: true });
     }
   }

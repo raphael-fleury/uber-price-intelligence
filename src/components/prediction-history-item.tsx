@@ -1,6 +1,7 @@
 import { Circle, MapPin } from "lucide-react";
 import { Card } from "./ui/card";
 import { Chip } from "./ui/chip";
+import { PredictionData } from "@/schemas/prediction.schema";
 
 type ChipColor = "emerald" | "lime" | "blue" | "orange" | "crimson";
 
@@ -21,22 +22,19 @@ const levelDotColors: Record<number, string> = {
 };
 
 type PredictionHistoryItemProps = {
-  origin: string;
-  destination: string;
-  date: string;
-  time: string;
-  classification: string;
-  classificationLevel: number;
+  prediction: PredictionData
 };
 
-export default function PredictionHistoryItem({
-  origin,
-  destination,
-  date,
-  time,
-  classification,
-  classificationLevel,
-}: PredictionHistoryItemProps) {
+export default function PredictionHistoryItem({ prediction }: PredictionHistoryItemProps) {
+  const {
+    origin,
+    destination,
+    date,
+    time,
+    classification,
+    classificationLevel,
+  } = prediction;
+
   const level = Math.max(1, Math.min(5, classificationLevel));
   const formattedDate = new Date(`${date}T${time}`).toLocaleDateString("pt-BR", {
     day: "2-digit",
@@ -49,9 +47,9 @@ export default function PredictionHistoryItem({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 text-sm text-on-surface font-medium truncate">
             <MapPin className="w-4 h-4 text-secondary shrink-0" />
-            <span className="truncate">{origin}</span>
+            <span className="truncate">{origin.name}</span>
             <Circle className="w-3 h-3 text-on-surface-variant shrink-0" />
-            <span className="truncate">{destination}</span>
+            <span className="truncate">{destination.name}</span>
           </div>
           <p className="text-on-surface-variant text-xs mt-1">{formattedDate} às {time}</p>
         </div>
