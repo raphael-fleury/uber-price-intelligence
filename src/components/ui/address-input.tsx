@@ -1,14 +1,15 @@
 import { useRef, useEffect } from "react";
-import { useAddressSearch, AddressResult } from "../../hooks/use-address-search";
+import { useAddressSearch } from "../../hooks/use-address-search";
 import { LocationPicker } from "./location-picker";
 import { Input, InputProps } from "./input";
+import { Location } from "@/schemas/location.schema";
 
-type AddressInputProps = InputProps & {
-  value: string;
-  onChange: (value: string) => void;
+type AddressInputProps = Omit<InputProps, "value"> & {
+  value: Location | null;
+  setValue: (value: Location | null) => void;
 };
 
-export function AddressInput({ value, onChange, ...params }: AddressInputProps) {
+export function AddressInput({ value, setValue, ...params }: AddressInputProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { query, setQuery, results, loading } = useAddressSearch();
@@ -27,26 +28,26 @@ export function AddressInput({ value, onChange, ...params }: AddressInputProps) 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [setQuery]);
 
-  const handleSelect = (result: AddressResult) => {
-    onChange(result.display_name);
+  const handleSelect = (result: Location) => {
+    setValue(result);
     setQuery("");
   };
 
   const handleClear = () => {
-    onChange("");
+    setValue(null);
     setQuery("");
   };
 
   return (
     <div ref={containerRef} className="relative">
       <Input
+        {...params}
         type="text"
-        value={query || value}
+        value={query || value?.display_name || ""}
         onChange={(e) => {
-          onChange(e.target.value);
+          setValue(results.find(r => r.display_name === e.target.value) || null);
           setQuery(e.target.value);
         }}
-        {...params}
         handleClear={value ? handleClear : undefined}
       />
 

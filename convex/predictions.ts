@@ -1,7 +1,8 @@
 import { v } from "convex/values";
-import { action, mutation, query, internalMutation } from "./_generated/server";
+import { action, query, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { internal } from "./_generated/api";
+import { locationSchema } from "./schemas/location.schema";
 
 export const getPredictions = query({
   args: {},
@@ -19,8 +20,8 @@ export const getPredictions = query({
 export const savePrediction = internalMutation({
   args: {
     userId: v.optional(v.id("users")),
-    origin: v.string(),
-    destination: v.string(),
+    originId: v.number(),
+    destinationId: v.number(),
     date: v.string(),
     time: v.string(),
     classification: v.string(),
@@ -35,8 +36,8 @@ export const savePrediction = internalMutation({
 
 export const predictPrice = action({
   args: {
-    origin: v.string(),
-    destination: v.string(),
+    origin: locationSchema,
+    destination: locationSchema,
     date: v.string(),
     time: v.string(),
   },
@@ -80,9 +81,10 @@ export const predictPrice = action({
     }
 
     const parsed = {
+      ...args,
       classification: randomClassification,
       classificationLevel: randomClassificationLevel,
-      reasoning: `A corrida de ${args.origin} para ${args.destination} no ${dayOfWeek} às ${args.time} está classificada como "${randomClassification}" baseado em padrões históricos e condições atuais.
+      reasoning: `A corrida de ${args.origin.name} para ${args.destination.name} no ${dayOfWeek} às ${args.time} está classificada como "${randomClassification}" baseado em padrões históricos e condições atuais.
  Fatores principais influenciam essa estimativa.
 `,
       factors: randomFactors,
@@ -90,8 +92,8 @@ export const predictPrice = action({
 
     await ctx.runMutation(internal.predictions.savePrediction, {
       userId: userId ?? undefined,
-      origin: args.origin,
-      destination: args.destination,
+      originId: args.origin.place_id,
+      destinationId: args.destination.place_id,
       date: args.date,
       time: args.time,
       classification: parsed.classification,

@@ -3,7 +3,6 @@ import { useAction } from "convex/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MapPin, Activity } from "lucide-react";
-import { z } from "zod";
 import { api } from "../../convex/_generated/api";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -11,31 +10,10 @@ import { Loading } from "./ui/spinner";
 import { DateInput } from "./ui/date-input";
 import { TimeInput } from "./ui/time-input";
 import { AddressInput } from "./ui/address-input";
-
-const predictionSchema = z.object({
-  origin: z.string().min(1, "Informe a origem"),
-  destination: z.string().min(1, "Informe o destino"),
-  date: z.string().min(1, "Informe a data"),
-  time: z.string().min(1, "Informe o horário"),
-});
-
-type PredictionFormData = z.infer<typeof predictionSchema>;
-
-type PredictionData = {
-  classification: string;
-  classificationLevel: number;
-  reasoning: string;
-  factors: string[];
-};
+import { PredictionData, PredictionFormData, predictionSchema } from "@/schemas/prediction.schema";
 
 type Props = {
-  onPrediction: (prediction: {
-    data: PredictionData;
-    origin: string;
-    destination: string;
-    date: string;
-    time: string;
-  }) => void;
+  onPrediction: (prediction: PredictionData) => void;
 };
 
 export default function PricePredictorForm({ onPrediction }: Props) {
@@ -54,8 +32,6 @@ export default function PricePredictorForm({ onPrediction }: Props) {
   } = useForm<PredictionFormData>({
     resolver: zodResolver(predictionSchema),
     defaultValues: {
-      origin: "",
-      destination: "",
       date: "",
       time: "",
     },
@@ -63,8 +39,11 @@ export default function PricePredictorForm({ onPrediction }: Props) {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const updateValue = (field: keyof PredictionFormData) => (value: string) => {
-    setValue(field, value, { shouldValidate: true, shouldDirty: true });
+  function updateValue<T>(field: keyof PredictionFormData) {
+    return (value: T) => {
+      console.log({ field, value })
+      setValue(field, value as any, { shouldValidate: true, shouldDirty: true });
+    }
   }
   
   const onSubmit = async (data: PredictionFormData) => {
@@ -73,10 +52,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
 
     try {
       const result = await predictPrice(data);
-      onPrediction({
-        data: result as PredictionData,
-        ...data,
-      });
+      onPrediction(result);
     } catch (err) {
       setServerError("Erro ao processar a previsão. Tente novamente.");
       console.error(err);
@@ -99,17 +75,15 @@ export default function PricePredictorForm({ onPrediction }: Props) {
             label="Origem"
             placeholder="Ex: Av. Paulista, São Paulo"
             value={watch("origin")}
-            {...register("origin")}
+            setValue={(value) => updateValue("origin")(value)}
             error={errors.origin?.message}
-            onChange={(value) => updateValue("origin")(value as string)}
           />
           <AddressInput
             label="Destino"
             placeholder="Ex: Aeroporto de Congonhas"
             value={watch("destination")}
-            {...register("destination")}
+            setValue={(value) => updateValue("destination")(value)}
             error={errors.destination?.message}
-            onChange={(value) => updateValue("destination")(value as string)}
           />
           <DateInput
             label="Data"

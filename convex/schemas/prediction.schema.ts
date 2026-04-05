@@ -2,8 +2,8 @@ import { Infer, v } from "convex/values";
 
 export const predictionSchema = v.object({
   userId: v.optional(v.id("users")),
-  origin: v.string(),
-  destination: v.string(),
+  originId: v.number(),
+  destinationId: v.number(),
   date: v.string(),
   time: v.string(),
   classification: v.string(),

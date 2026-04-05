@@ -2,21 +2,7 @@ import { ArrowRight, MapPin, Clock } from "lucide-react";
 import { Card } from "./ui/card";
 import { Chip } from "./ui/chip";
 import { Gauge } from "./ui/gauge";
-
-type PredictionData = {
-  classification: string;
-  classificationLevel: number;
-  reasoning: string;
-  factors: string[];
-};
-
-type Props = {
-  result: PredictionData;
-  origin: string;
-  destination: string;
-  date: string;
-  time: string;
-};
+import { PredictionData } from "@/schemas/prediction.schema";
 
 type LevelConfig = {
   label: string;
@@ -64,11 +50,11 @@ const levelConfig: Record<number, LevelConfig> = {
   },
 };
 
-export default function PredictionResult({ result, origin, destination, date, time }: Props) {
-  const level = Math.max(1, Math.min(5, result.classificationLevel));
+export default function PredictionResult(data: PredictionData) {
+  const level = Math.max(1, Math.min(5, data.classificationLevel));
   const config = levelConfig[level];
 
-  const formattedDate = new Date(`${date}T${time}`).toLocaleDateString("pt-BR", {
+  const formattedDate = new Date(`${data.date}T${data.time}`).toLocaleDateString("pt-BR", {
     weekday: "long",
     day: "2-digit",
     month: "long",
@@ -103,27 +89,27 @@ export default function PredictionResult({ result, origin, destination, date, ti
           <div className="flex items-center gap-2 text-sm">
             <ArrowRight className="w-4 h-4 text-primary shrink-0" />
             <span className="text-on-surface-variant w-16 shrink-0">Destino:</span>
-            <span className="text-on-surface font-medium truncate">{destination}</span>
+            <span className="text-on-surface font-medium truncate">{data.destination.name}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <Clock className="w-4 h-4 text-on-surface-variant shrink-0" />
             <span className="text-on-surface-variant w-16 shrink-0">Quando:</span>
-            <span className="text-on-surface font-medium capitalize">{formattedDate} às {time}</span>
+            <span className="text-on-surface font-medium capitalize">{formattedDate} às {data.time}</span>
           </div>
         </div>
       </Card>
 
       <div className="mb-4">
         <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-2">Análise</p>
-        <p className="text-on-surface text-sm leading-relaxed">{result.reasoning}</p>
+        <p className="text-on-surface text-sm leading-relaxed">{data.reasoning}</p>
       </div>
 
-      {result.factors && result.factors.length > 0 && (
+      {data.factors && data.factors.length > 0 && (
         <div>
           <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-2">Fatores Identificados</p>
           <div className="flex flex-wrap gap-2">
-            {result.factors.map((factor, i) => (
-              <Chip key={i} variant="default">
+            {data.factors.map((factor) => (
+              <Chip key={factor} variant="default">
                 {factor}
               </Chip>
             ))}

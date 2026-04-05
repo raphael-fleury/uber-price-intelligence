@@ -4,22 +4,11 @@ import { Card } from "./ui/card";
 import PredictionResult from "./prediction-result";
 import PricePredictorForm from "./price-predictor-form";
 import { features } from "../config/features";
+import { PredictionData } from "@/schemas/prediction.schema";
 
-type PredictionData = {
-  classification: string;
-  classificationLevel: number;
-  reasoning: string;
-  factors: string[];
-};
 
 export default function PredictionLayout({ onLoginClick }: { onLoginClick: () => void }) {
-  const [prediction, setPrediction] = useState<{
-    data: PredictionData;
-    origin: string;
-    destination: string;
-    date: string;
-    time: string;
-  } | null>(null);
+  const [prediction, setPrediction] = useState<PredictionData | null>(null);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -28,11 +17,7 @@ export default function PredictionLayout({ onLoginClick }: { onLoginClick: () =>
         {prediction ? (
           <>
             <PredictionResult
-              result={prediction.data}
-              origin={prediction.origin}
-              destination={prediction.destination}
-              date={prediction.date}
-              time={prediction.time}
+              {...prediction}
             />
             {features.auth && (
               <Card variant="glass" padding="md" className="flex flex-row items-start gap-3">

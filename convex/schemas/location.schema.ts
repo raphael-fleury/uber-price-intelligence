@@ -17,6 +17,6 @@ const nominatimLocationSchema = v.object({
   type: v.string(),
 });
 
-export const locationSchema = nominatimLocationSchema;
+export const locationSchema = nominatimLocationSchema.pick("place_id", "display_name", "name", "lat", "lon");
 
 export type Location = Infer<typeof locationSchema>;
