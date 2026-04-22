@@ -1,15 +1,18 @@
 import { useRef, useEffect } from "react";
 import { useAddressSearch } from "../../hooks/use-address-search";
 import { LocationPicker } from "./location-picker";
-import { Input, InputProps } from "./input";
-import { Location } from "@/schemas/location.schema";
+import { Input } from "./input";
+import { Location } from "../../../convex/schemas/location.schema";
 
-type AddressInputProps = Omit<InputProps, "value"> & {
+type AddressInputProps = {
+  label?: string;
+  placeholder?: string;
   value: Location | null;
-  setValue: (value: Location | null) => void;
+  onSelect: (value: Location | null) => void;
+  error?: string;
 };
 
-export function AddressInput({ value, setValue, ...params }: AddressInputProps) {
+export function AddressInput({ label, placeholder, value, onSelect, error }: AddressInputProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { query, setQuery, results, loading } = useAddressSearch();
@@ -27,23 +30,30 @@ export function AddressInput({ value, setValue, ...params }: AddressInputProps) 
   }, [setQuery]);
 
   const handleSelect = (result: Location) => {
-    setValue(result);
+    onSelect(result);
     setQuery("");
   };
 
   const handleClear = () => {
-    setValue(null);
+    onSelect(null);
     setQuery("");
   };
 
   return (
     <div ref={containerRef} className="relative">
       <Input
-        {...params}
+        label={label}
         type="text"
+        placeholder={placeholder}
+        error={error}
         value={query || value?.display_name || ""}
         onChange={(e) => {
-          setValue(results.find(r => r.display_name === e.target.value) || null);
+          const found = results.find(r => r.display_name === e.target.value);
+          if (found) {
+            onSelect(found);
+          } else {
+            onSelect(null);
+          }
           setQuery(e.target.value);
         }}
         handleClear={value ? handleClear : undefined}

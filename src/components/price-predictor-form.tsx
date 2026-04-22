@@ -10,6 +10,7 @@ import { Loading } from "./ui/spinner";
 import { DateInput } from "./ui/date-input";
 import { TimeInput } from "./ui/time-input";
 import { AddressInput } from "./ui/address-input";
+import { useLocationStore } from "../stores/location-store";
 import { PredictionData, PredictionFormData, predictionSchema } from "@/schemas/prediction.schema";
 
 type Props = {
@@ -19,6 +20,8 @@ type Props = {
 export default function PricePredictorForm({ onPrediction }: Props) {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  
+  const { origin, destination, clearLocations } = useLocationStore();
 
   const predictPrice = useAction(api.predictions.predictPrice);
 
@@ -32,6 +35,8 @@ export default function PricePredictorForm({ onPrediction }: Props) {
   } = useForm<PredictionFormData>({
     resolver: zodResolver(predictionSchema),
     defaultValues: {
+      originId: 0,
+      destinationId: 0,
       date: "",
       time: "",
     },
@@ -39,19 +44,26 @@ export default function PricePredictorForm({ onPrediction }: Props) {
 
   const today = new Date().toISOString().split("T")[0];
 
-  function updateValue<T>(field: keyof PredictionFormData) {
-    return (value: T) => {
-      setValue(field, value as any, { shouldValidate: true, shouldDirty: true });
-    }
-  }
-  
   const onSubmit = async (data: PredictionFormData) => {
     setLoading(true);
     setServerError(null);
 
     try {
-      const result = await predictPrice(data);
+      if (!origin || !destination) {
+        setServerError("Selecione origem e destino.");
+        setLoading(false);
+        return;
+      }
+
+      const result = await predictPrice({
+        origin: origin,
+        destination: destination,
+        date: data.date,
+        time: data.time,
+      });
       onPrediction(result);
+      clearLocations();
+      reset();
     } catch (err) {
       setServerError("Erro ao processar a previsão. Tente novamente.");
       console.error(err);
@@ -59,6 +71,11 @@ export default function PricePredictorForm({ onPrediction }: Props) {
       setLoading(false);
     }
   };
+
+  const hasOrigin = !!origin;
+  const hasDestination = !!destination;
+  const canSubmit = isValid && hasOrigin && hasDestination;
+  console.log({ origin, destination, isValid, errors, values: watch() });
 
   return (
     <Card variant="section" padding="md">
@@ -73,31 +90,35 @@ export default function PricePredictorForm({ onPrediction }: Props) {
           <AddressInput
             label="Origem"
             placeholder="Ex: Av. Paulista, São Paulo"
-            value={watch("origin")}
-            setValue={(value) => updateValue("origin")(value)}
-            error={errors.origin?.message}
+            value={origin}
+            onSelect={(loc) => {
+              useLocationStore.getState().setOrigin(loc);
+              setValue("originId", loc?.place_id || 0);
+            }}
+            error={errors.originId ? "Selecione a origem" : undefined}
           />
           <AddressInput
             label="Destino"
             placeholder="Ex: Aeroporto de Congonhas"
-            value={watch("destination")}
-            setValue={(value) => updateValue("destination")(value)}
-            error={errors.destination?.message}
+            value={destination}
+            onSelect={(loc) => {
+              useLocationStore.getState().setDestination(loc);
+              setValue("destinationId", loc?.place_id || 0);
+            }}
+            error={errors.destinationId ? "Selecione o destino" : undefined}
           />
           <DateInput
             label="Data"
             min={today}
             value={watch("date")}
-            setValue={(value) => updateValue("date")(value)}
+            setValue={(value) => setValue("date", value)}
             error={errors.date?.message}
-            {...register("date")}
           />
           <TimeInput
             label="Horário"
             value={watch("time")}
-            setValue={(value) => updateValue("time")(value)}
+            setValue={(value) => setValue("time", value)}
             error={errors.time?.message}
-            {...register("time")}
           />
         </div>
 
@@ -105,7 +126,10 @@ export default function PricePredictorForm({ onPrediction }: Props) {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => reset()}
+            onClick={() => {
+              clearLocations();
+              reset();
+            }}
           >
             Limpar
           </Button>
@@ -113,7 +137,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
             type="submit"
             fullWidth
             loading={loading}
-            disabled={!isValid}
+            disabled={!canSubmit}
           >
             Prever Preço
           </Button>

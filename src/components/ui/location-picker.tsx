@@ -1,12 +1,12 @@
-import { MapPin } from "lucide-react";
-import { AddressResult } from "@/hooks/use-address-search";
 import { useMemo } from "react";
+import { MapPin } from "lucide-react";
+import { Location } from "../../../convex/schemas/location.schema";
 
 type LocationPickerProps = {
   query: string;
-  results: AddressResult[];
+  results: Location[];
   loading: boolean;
-  handleSelect: (result: AddressResult) => void;
+  handleSelect: (result: Location) => void;
 }
 
 export const LocationPicker = ({ query, results, loading, handleSelect }: LocationPickerProps) => {
