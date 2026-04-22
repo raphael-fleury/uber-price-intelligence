@@ -3,6 +3,7 @@ import { action, query, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { internal } from "./_generated/api";
 import { Location, locationSchema } from "./schemas/location.schema";
+import { addDays, isAfter, isBefore } from "date-fns";
 
 export const getPredictions = query({
   args: {},
@@ -67,7 +68,27 @@ export const predictPrice = action({
 
     const dateObj = new Date(`${args.date}T${args.time}`);
     const dayOfWeek = dateObj.toLocaleDateString("pt-BR", { weekday: "long" });
-    const hour = dateObj.getHours();
+
+    const today = new Date();
+    const maxClimateDate = addDays(today, 14);
+
+    if (isBefore(dateObj, maxClimateDate)) {
+      const originClimate = await ctx.runAction(internal.locations.getLocationClimateAtTime, {
+        latitude: args.origin.lat,
+        longitude: args.origin.lon,
+        date: args.date,
+        time: args.time,
+      });
+  
+      const destinationClimate = await ctx.runAction(internal.locations.getLocationClimateAtTime, {
+        latitude: args.destination.lat,
+        longitude: args.destination.lon,
+        date: args.date,
+        time: args.time,
+      });
+
+      console.log({ originClimate, destinationClimate })
+    }
 
     // Gerar valores aleatórios para simulação
     const classificationLevels = [1, 2, 3, 4, 5];
