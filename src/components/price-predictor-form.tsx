@@ -12,6 +12,7 @@ import { TimeInput } from "./ui/time-input";
 import { AddressInput } from "./ui/address-input";
 import { useLocationStore } from "../stores/location-store";
 import { PredictionData, PredictionFormData, predictionSchema } from "@/schemas/prediction.schema";
+import { locationSchema } from "@/schemas/location.schema";
 
 type Props = {
   onPrediction: (prediction: PredictionData) => void;
@@ -56,8 +57,8 @@ export default function PricePredictorForm({ onPrediction }: Props) {
       }
 
       const result = await predictPrice({
-        origin: origin,
-        destination: destination,
+        origin: locationSchema.parse(origin),
+        destination: locationSchema.parse(destination),
         date: data.date,
         time: data.time,
       });
@@ -75,7 +76,12 @@ export default function PricePredictorForm({ onPrediction }: Props) {
   const hasOrigin = !!origin;
   const hasDestination = !!destination;
   const canSubmit = isValid && hasOrigin && hasDestination;
-  console.log({ origin, destination, isValid, errors, values: watch() });
+
+  function updateValue<T>(field: keyof PredictionFormData) {
+    return (value: T) => {
+      setValue(field, value as any, { shouldValidate: true, shouldDirty: true });
+    }
+  }
 
   return (
     <Card variant="section" padding="md">
@@ -93,7 +99,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
             value={origin}
             onSelect={(loc) => {
               useLocationStore.getState().setOrigin(loc);
-              setValue("originId", loc?.place_id || 0);
+              updateValue("originId")(loc?.place_id || 0);
             }}
             error={errors.originId ? "Selecione a origem" : undefined}
           />
@@ -103,7 +109,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
             value={destination}
             onSelect={(loc) => {
               useLocationStore.getState().setDestination(loc);
-              setValue("destinationId", loc?.place_id || 0);
+              updateValue("destinationId")(loc?.place_id || 0);
             }}
             error={errors.destinationId ? "Selecione o destino" : undefined}
           />
@@ -111,13 +117,13 @@ export default function PricePredictorForm({ onPrediction }: Props) {
             label="Data"
             min={today}
             value={watch("date")}
-            setValue={(value) => setValue("date", value)}
+            setValue={updateValue("date")}
             error={errors.date?.message}
           />
           <TimeInput
             label="Horário"
             value={watch("time")}
-            setValue={(value) => setValue("time", value)}
+            setValue={updateValue("time")}
             error={errors.time?.message}
           />
         </div>
