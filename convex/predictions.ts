@@ -55,22 +55,6 @@ export const savePrediction = internalMutation({
   },
 });
 
-export const getOrCreateLocation = internalMutation({
-  args: locationSchema,
-  handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query("locations")
-      .withIndex("by_place_id", (q) => q.eq("place_id", args.place_id))
-      .first();
-
-    if (existing) {
-      return existing._id;
-    }
-
-    return await ctx.db.insert("locations", args);
-  },
-});
-
 export const predictPrice = action({
   args: {
     origin: locationSchema,
@@ -127,8 +111,8 @@ export const predictPrice = action({
       factors: randomFactors,
     };
 
-    await ctx.runMutation(internal.predictions.getOrCreateLocation, args.origin);
-    await ctx.runMutation(internal.predictions.getOrCreateLocation, args.destination);
+    await ctx.runMutation(internal.locations.getOrCreateLocation, args.origin);
+    await ctx.runMutation(internal.locations.getOrCreateLocation, args.destination);
 
     await ctx.runMutation(internal.predictions.savePrediction, {
       userId: userId ?? undefined,
