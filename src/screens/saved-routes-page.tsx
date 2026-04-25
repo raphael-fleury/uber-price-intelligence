@@ -1,14 +1,12 @@
 import { useQuery } from "convex/react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import { Card } from "../components/ui/card";
-import { MapPin, Trash2 } from "lucide-react";
+import { MapPin } from "lucide-react";
 import SavedRouteItem from "@/components/saved-route-item";
 
-type SavedRoutesPageProps = {
-  onBackClick: () => void;
-};
-
-export default function SavedRoutesPage({ onBackClick }: SavedRoutesPageProps) {
+export default function SavedRoutesPage() {
+  const navigate = useNavigate();
   const routes = useQuery(api.userRoutes.getUserRoutes);
 
   if (routes === undefined) {
@@ -37,7 +35,7 @@ export default function SavedRoutesPage({ onBackClick }: SavedRoutesPageProps) {
             Você ainda não tem rotas salvas
           </p>
           <button
-            onClick={onBackClick}
+            onClick={() => navigate("/")}
             className="px-6 py-2 bg-secondary text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
           >
             Voltar para Previsões
@@ -46,7 +44,7 @@ export default function SavedRoutesPage({ onBackClick }: SavedRoutesPageProps) {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {routes.map((route) => (
-            <SavedRouteItem key={route._id} route={route} onBackClick={onBackClick} />
+            <SavedRouteItem key={route._id} route={route} />
           ))}
         </div>
       )}

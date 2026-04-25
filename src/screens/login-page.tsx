@@ -1,11 +1,18 @@
+import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { SignInForm } from "../components/sign-in-form";
 
-type LoginPageProps = {
-  onBack: () => void;
-};
+export default function LoginPage() {
+  const navigate = useNavigate();
 
-export default function LoginPage({ onBack }: LoginPageProps) {
+  const handleBack = () => {
+    navigate("/");
+  };
+
+  const handleSuccess = () => {
+    navigate("/");
+  };
+
   return (
     <div className="animate-fade-in">
       
@@ -14,10 +21,10 @@ export default function LoginPage({ onBack }: LoginPageProps) {
         <p className="text-on-surface-variant">Entre para salvar seu histórico de consultas</p>
       </div>
       <div className="bg-surface-variant/60 backdrop-blur-[20px] border border-outline/10 rounded-container p-8 max-w-md mx-auto">
-        <SignInForm onSuccess={onBack} />
+        <SignInForm onSuccess={handleSuccess} />
       </div>
       <button
-        onClick={onBack}
+        onClick={handleBack}
         className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface text-sm mb-8 transition-colors max-w-md mx-auto mt-6"
       >
         <ArrowLeft className="w-4 h-4" />

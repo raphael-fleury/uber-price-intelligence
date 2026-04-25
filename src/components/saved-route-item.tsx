@@ -1,4 +1,5 @@
 import { MapPin, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Location } from "../../convex/schemas/location.schema";
 import { Card } from "./ui/card";
 
@@ -8,7 +9,6 @@ type SavedRouteItemProps = {
     origin: Location | null;
     destination: Location | null;
   };
-  onBackClick: () => void;
 };
 
 function LocationDisplay({ location, isOrigin }: { location: Location | null, isOrigin: boolean }) {
@@ -31,7 +31,9 @@ function LocationDisplay({ location, isOrigin }: { location: Location | null, is
   )
 }
 
-export default function SavedRouteItem({ route, onBackClick }: SavedRouteItemProps) {
+export default function SavedRouteItem({ route }: SavedRouteItemProps) {
+  const navigate = useNavigate();
+
   return (
     <Card
       key={route._id}
@@ -49,11 +51,13 @@ export default function SavedRouteItem({ route, onBackClick }: SavedRouteItemPro
         </button>
       </div>
 
-      <LocationDisplay location={route.destination} />
+      <div className="h-px bg-surface-variant opacity-50"></div>
+
+      <LocationDisplay location={route.destination} isOrigin={false} />
 
       <div className="pt-2">
         <button
-          onClick={onBackClick}
+          onClick={() => navigate("/")}
           className="w-full px-4 py-2 bg-secondary text-white rounded-lg hover:opacity-90 transition-opacity font-medium text-sm"
         >
           Ver Previsão

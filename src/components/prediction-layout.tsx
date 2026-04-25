@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BarChart3, Info } from "lucide-react";
 import { Authenticated, Unauthenticated, useMutation } from "convex/react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import { PredictionData } from "@/schemas/prediction.schema";
 import { features } from "../config/features";
@@ -9,7 +10,12 @@ import { Spinner } from "./ui/spinner";
 import PredictionResult from "./prediction-result";
 import PricePredictorForm from "./price-predictor-form";
 
-export default function PredictionLayout({ onLoginClick, onSavedRoutesNavigate }: { onLoginClick: () => void; onSavedRoutesNavigate: () => void }) {
+type PredictionLayoutProps = {
+  onLoginClick: () => void;
+};
+
+export default function PredictionLayout({ onLoginClick }: PredictionLayoutProps) {
+  const navigate = useNavigate();
   const [prediction, setPrediction] = useState<PredictionData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const saveUserRoute = useMutation(api.userRoutes.saveUserRoute);
@@ -24,7 +30,7 @@ export default function PredictionLayout({ onLoginClick, onSavedRoutesNavigate }
         destinationId: prediction.destination.place_id,
       });
       setTimeout(() => {
-        onSavedRoutesNavigate();
+        navigate("/saved-routes");
       }, 500);
     } catch (error) {
       console.error("Error saving route:", error);

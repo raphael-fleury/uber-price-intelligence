@@ -1,15 +1,12 @@
 import { Authenticated, useQuery } from "convex/react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import PredictionLayout from "../components/prediction-layout";
 import PredictionHistory from "../components/prediction-history";
 import { features } from "../config/features";
 
-type PredictPageProps = {
-  onLoginClick: () => void;
-  onSavedRoutesNavigate: () => void;
-};
-
-export default function PredictPage({ onLoginClick, onSavedRoutesNavigate }: PredictPageProps) {
+export default function PredictPage() {
+  const navigate = useNavigate();
   const loggedInUser = features.auth ? useQuery(api.auth.loggedInUser) : null;
 
   if (features.auth && loggedInUser === undefined) {
@@ -31,7 +28,7 @@ export default function PredictPage({ onLoginClick, onSavedRoutesNavigate }: Pre
         </p>
       </div>
 
-      <PredictionLayout onLoginClick={onLoginClick} onSavedRoutesNavigate={onSavedRoutesNavigate} />
+      <PredictionLayout onLoginClick={() => navigate("/login")} />
 
       {features.auth && (
         <Authenticated>
