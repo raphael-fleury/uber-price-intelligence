@@ -84,7 +84,7 @@ export default function PredictionResult(data: PredictionData) {
           <div className="flex items-center gap-2 text-sm">
             <MapPin className="w-4 h-4 text-secondary shrink-0" />
             <span className="text-on-surface-variant w-16 shrink-0">Origem:</span>
-            <span className="text-on-surface font-medium truncate">{origin}</span>
+            <span className="text-on-surface font-medium truncate">{data.origin.name}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <ArrowRight className="w-4 h-4 text-primary shrink-0" />
