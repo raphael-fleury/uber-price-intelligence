@@ -1,7 +1,93 @@
 import { v } from "convex/values";
 import { differenceInMilliseconds, parseISO } from "date-fns";
-import { internalAction, internalMutation } from "./_generated/server";
+import { action, internalAction, internalMutation, internalQuery, query } from "./_generated/server";
 import { locationSchema } from "./schemas/location.schema";
+import { internal } from "./_generated/api";
+import { NominatimLocation, nominatimLocationSchema } from "./schemas/location.cache.schema";
+
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas em ms
+
+export const searchLocationsInCache = internalQuery({
+    args: {
+        searchQuery: v.string(),
+    },
+    handler: async (ctx, args): Promise<NominatimLocation[] | null> => {
+        const cached = await ctx.db
+            .query("locationCache")
+            .withIndex("by_search_query", (q) => q.eq("searchQuery", args.searchQuery))
+            .first();
+
+        if (!cached) {
+            console.log(`No cache found for "${args.searchQuery}".`);
+            return null;
+        }
+
+        const isCacheValid = differenceInMilliseconds(new Date(), new Date(cached.timestamp)) < CACHE_TTL;
+        if (!isCacheValid) {
+            console.log(`Cache entry for "${args.searchQuery}" is invalid.`);
+            return null;
+        }
+
+        console.log(`Valid Cache entry found for "${args.searchQuery}". Returning cached results.`);
+        return cached.results;
+    }
+});
+
+export const searchLocationsInNominatim = internalAction({
+    args: {
+        searchQuery: v.string(),
+    },
+    handler: async (ctx, args): Promise<NominatimLocation[]> => {
+        console.log(`Searching Nominatim for query: ${args.searchQuery}`);
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${args.searchQuery}&format=json&limit=5`,
+            {
+                headers: {
+                    'User-Agent': 'Uber Price Intelligence/1.0 (https://github.com/raphael-fleury/uber-price-intelligence)',
+                    'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
+                },
+            }
+        );
+
+        const data = await response.json();
+        return data;
+    }
+});
+
+export const saveLocationsInCache = internalMutation({
+    args: {
+        searchQuery: v.string(),
+        results: v.array(nominatimLocationSchema)
+    },
+    handler: async (ctx, args) => {
+        await ctx.db.insert("locationCache", {
+            searchQuery: args.searchQuery,
+            results: args.results,
+            timestamp: Date.now()
+        });
+    }
+});
+
+export const searchLocations = action({
+    args: {
+        searchQuery: v.string(),
+    },
+    handler: async (ctx, args): Promise<NominatimLocation[]> => {
+        // Check cache first
+        const cached = await ctx.runQuery(internal.locations.searchLocationsInCache, { searchQuery: args.searchQuery });
+
+        if (cached) {
+            return cached;
+        }
+
+        // Fetch from Nominatim
+        const data = await ctx.runAction(internal.locations.searchLocationsInNominatim, { searchQuery: args.searchQuery });
+
+        // Cache the results
+        await ctx.runMutation(internal.locations.saveLocationsInCache, { searchQuery: args.searchQuery, results: data });
+        return data;
+    }
+})
 
 export const getOrCreateLocation = internalMutation({
     args: locationSchema,

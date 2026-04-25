@@ -1,40 +1,36 @@
 import { useState, useEffect, useCallback } from "react";
+import { useAction } from "convex/react";
 import { Location } from "@/schemas/location.schema";
+import { api } from "../../convex/_generated/api";
 
 export function useAddressSearch() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Location[]>([]);
   const [loading, setLoading] = useState(false);
+  const searchLocations = useAction(api.locations.searchLocations);
 
-  const search = useCallback(async (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      return;
-    }
+  const search = useCallback(
+    async (searchQuery: string) => {
+      if (!searchQuery.trim()) {
+        setResults([]);
+        return;
+      }
 
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${searchQuery}&format=json&limit=5`,
-        {
-          headers: {
-            'User-Agent': 'Uber Price Intelligence/1.0 (https://github.com/raphael-fleury/uber-price-intelligence)',
-            'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
-          },
-        }
-      );
-
-      const data = await response.json();
-      setResults(data);
-    } catch (error) {
-      console.error("Address search error:", error);
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      try {
+        setLoading(true);
+        const data = await searchLocations({ searchQuery });
+        setResults(data);
+      } catch (error) {
+        console.error("Address search error:", error);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchLocations]
+  );
 
   useEffect(() => {
-    setLoading(true);
     const timer = setTimeout(() => {
       search(query);
     }, 1000);
