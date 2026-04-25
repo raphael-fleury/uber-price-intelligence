@@ -42,7 +42,7 @@ export default function SavedRouteItem({ route }: SavedRouteItemProps) {
       className="flex flex-col gap-4"
     >
       <div className="flex items-start justify-between">
-        <LocationDisplay location={route.origin} />
+        <LocationDisplay location={route.origin} isOrigin={true} />
         <button
           className="hover:bg-surface-high rounded-lg transition-colors text-on-surface-variant hover:text-semantic-crimson"
           title="Remover rota"
