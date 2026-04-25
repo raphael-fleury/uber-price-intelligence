@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { BarChart3, Info } from "lucide-react";
+import { BarChart3, Info, Activity } from "lucide-react";
 import { Authenticated, Unauthenticated, useMutation } from "convex/react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import { PredictionData } from "@/schemas/prediction.schema";
 import { features } from "../config/features";
 import { Card } from "./ui/card";
-import { Spinner } from "./ui/spinner";
+import { Spinner, Loading } from "./ui/spinner";
 import PredictionResult from "./prediction-result";
 import PricePredictorForm from "./price-predictor-form";
 
@@ -18,6 +18,7 @@ export default function PredictionLayout({ onLoginClick }: PredictionLayoutProps
   const navigate = useNavigate();
   const [prediction, setPrediction] = useState<PredictionData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const saveUserRoute = useMutation(api.userRoutes.saveUserRoute);
 
   const handleSaveRoute = async () => {
@@ -42,9 +43,18 @@ export default function PredictionLayout({ onLoginClick }: PredictionLayoutProps
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <PricePredictorForm onPrediction={setPrediction} />
+      <PricePredictorForm onPrediction={setPrediction} onLoadingChange={setIsLoading} />
       <div className="flex flex-col gap-6">
-        {prediction ? (
+        {isLoading ? (
+          <Card variant="glass" padding="lg" className="flex flex-1 items-center justify-center min-h-[300px]">
+            <Loading
+              message="Analisando dados históricos..."
+              submessage="Verificando padrões de preço, horário e condições"
+            >
+              <Activity className="w-7 h-7 text-primary" />
+            </Loading>
+          </Card>
+        ) : prediction ? (
           <>
             <PredictionResult
               {...prediction}

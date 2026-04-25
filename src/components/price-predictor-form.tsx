@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useAction } from "convex/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MapPin, Activity } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { Loading } from "./ui/spinner";
 import { DateInput } from "./ui/date-input";
 import { TimeInput } from "./ui/time-input";
 import { AddressInput } from "./ui/address-input";
@@ -16,11 +15,17 @@ import { locationSchema } from "@/schemas/location.schema";
 
 type Props = {
   onPrediction: (prediction: PredictionData) => void;
+  onLoadingChange?: (loading: boolean) => void;
 };
 
-export default function PricePredictorForm({ onPrediction }: Props) {
+export default function PricePredictorForm({ onPrediction, onLoadingChange }: Props) {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  const updateLoading = (value: boolean) => {
+    setLoading(value);
+    onLoadingChange?.(value);
+  };
   
   const { origin, destination, clearLocations } = useLocationStore();
 
@@ -46,13 +51,13 @@ export default function PricePredictorForm({ onPrediction }: Props) {
   const today = new Date().toISOString().split("T")[0];
 
   const onSubmit = async (data: PredictionFormData) => {
-    setLoading(true);
+    updateLoading(true);
     setServerError(null);
 
     try {
       if (!origin || !destination) {
         setServerError("Selecione origem e destino.");
-        setLoading(false);
+        updateLoading(false);
         return;
       }
 
@@ -67,7 +72,7 @@ export default function PricePredictorForm({ onPrediction }: Props) {
       setServerError("Erro ao processar a previsão. Tente novamente.");
       console.error(err);
     } finally {
-      setLoading(false);
+      updateLoading(false);
     }
   };
 
@@ -150,17 +155,6 @@ export default function PricePredictorForm({ onPrediction }: Props) {
 
       {serverError && (
         <p className="text-semantic-crimson text-sm text-center font-medium mt-4">{serverError}</p>
-      )}
-
-      {loading && (
-        <div className="mt-6">
-          <Loading
-            message="Analisando dados históricos..."
-            submessage="Verificando padrões de preço, horário e condições"
-          >
-            <Activity className="w-7 h-7 text-primary" />
-          </Loading>
-        </div>
       )}
     </Card>
   );
