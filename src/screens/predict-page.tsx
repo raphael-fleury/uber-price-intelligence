@@ -1,13 +1,13 @@
 import { Authenticated, useQuery } from "convex/react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
+import { features } from "../config/features";
 import PredictionLayout from "../components/prediction-layout";
 import PredictionHistory from "../components/prediction-history";
-import { features } from "../config/features";
 
 export default function PredictPage() {
   const navigate = useNavigate();
-  const loggedInUser = features.auth ? useQuery(api.auth.loggedInUser) : null;
+  const loggedInUser = useQuery(api.auth.loggedInUser);
 
   if (features.auth && loggedInUser === undefined) {
     return (
