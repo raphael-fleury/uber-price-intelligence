@@ -35,3 +35,37 @@ export const saveUserRoute = mutation({
     });
   },
 });
+
+export const getUserRoutes = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) return [];
+
+    const userRoutes = await ctx.db
+      .query("userRoutes")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(50);
+
+    const routesWithLocations = await Promise.all(
+      userRoutes.map(async (route) => {
+        const origin = await ctx.db
+          .query("locations")
+          .withIndex("by_place_id", (q) => q.eq("place_id", route.originId))
+          .first() as Location | null;
+        const destination = await ctx.db
+          .query("locations")
+          .withIndex("by_place_id", (q) => q.eq("place_id", route.destinationId))
+          .first() as Location | null;
+        return {
+          ...route,
+          origin,
+          destination,
+        };
+      })
+    );
+
+    return routesWithLocations;
+  },
+});

@@ -9,8 +9,7 @@ import { Spinner } from "./ui/spinner";
 import PredictionResult from "./prediction-result";
 import PricePredictorForm from "./price-predictor-form";
 
-
-export default function PredictionLayout({ onLoginClick }: { onLoginClick: () => void }) {
+export default function PredictionLayout({ onLoginClick, onSavedRoutesNavigate }: { onLoginClick: () => void; onSavedRoutesNavigate: () => void }) {
   const [prediction, setPrediction] = useState<PredictionData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const saveUserRoute = useMutation(api.userRoutes.saveUserRoute);
@@ -24,7 +23,9 @@ export default function PredictionLayout({ onLoginClick }: { onLoginClick: () =>
         originId: prediction.origin.place_id,
         destinationId: prediction.destination.place_id,
       });
-      // Optionally show a success message here
+      setTimeout(() => {
+        onSavedRoutesNavigate();
+      }, 500);
     } catch (error) {
       console.error("Error saving route:", error);
       // Optionally show an error message here

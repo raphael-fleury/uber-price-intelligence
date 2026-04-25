@@ -1,5 +1,5 @@
 import { Authenticated, Unauthenticated } from "convex/react";
-import { Car } from "lucide-react";
+import { Car, Bookmark } from "lucide-react";
 import { SignOutButton } from "./sign-out-button";
 import { features } from "../config/features";
 
@@ -7,9 +7,10 @@ type HeaderProps = {
   showLogin: boolean;
   onLoginClick: () => void;
   onLogoClick: () => void;
+  onSavedRoutesClick: () => void;
 };
 
-export default function Header({ showLogin, onLoginClick, onLogoClick }: HeaderProps) {
+export default function Header({ showLogin, onLoginClick, onLogoClick, onSavedRoutesClick }: HeaderProps) {
   return (
     <header className="sticky top-0 z-10 bg-surface-lowest/80 backdrop-blur-sm h-16 flex justify-between items-center px-6 shadow-[0_1px_0_0_rgba(0,51,77,0.05)]">
       <button
@@ -21,23 +22,36 @@ export default function Header({ showLogin, onLoginClick, onLogoClick }: HeaderP
         </div>
         <h2 className="text-lg font-display font-bold text-on-surface">Uber Price Intelligence</h2>
       </button>
-      {features.auth && (
-        <Unauthenticated>
-          {!showLogin && (
+      <div className="flex items-center gap-4">
+        {features.auth && (
+          <Authenticated>
             <button
-              onClick={onLoginClick}
-              className="text-sm text-secondary font-medium hover:text-primary transition-colors"
+              onClick={onSavedRoutesClick}
+              className="text-sm text-secondary font-medium hover:text-primary transition-colors flex items-center gap-2"
             >
-              Entrar
+              <Bookmark className="w-4 h-4" />
+              Rotas Salvas
             </button>
-          )}
-        </Unauthenticated>
-      )}
-      {features.auth && (
-        <Authenticated>
-          <SignOutButton />
-        </Authenticated>
-      )}
+          </Authenticated>
+        )}
+        {features.auth && (
+          <Unauthenticated>
+            {!showLogin && (
+              <button
+                onClick={onLoginClick}
+                className="text-sm text-secondary font-medium hover:text-primary transition-colors"
+              >
+                Entrar
+              </button>
+            )}
+          </Unauthenticated>
+        )}
+        {features.auth && (
+          <Authenticated>
+            <SignOutButton />
+          </Authenticated>
+        )}
+      </div>
     </header>
   );
 }

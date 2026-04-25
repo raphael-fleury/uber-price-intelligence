@@ -6,9 +6,10 @@ import { features } from "../config/features";
 
 type PredictPageProps = {
   onLoginClick: () => void;
+  onSavedRoutesNavigate: () => void;
 };
 
-export default function PredictPage({ onLoginClick }: PredictPageProps) {
+export default function PredictPage({ onLoginClick, onSavedRoutesNavigate }: PredictPageProps) {
   const loggedInUser = features.auth ? useQuery(api.auth.loggedInUser) : null;
 
   if (features.auth && loggedInUser === undefined) {
@@ -30,7 +31,7 @@ export default function PredictPage({ onLoginClick }: PredictPageProps) {
         </p>
       </div>
 
-      <PredictionLayout onLoginClick={onLoginClick} />
+      <PredictionLayout onLoginClick={onLoginClick} onSavedRoutesNavigate={onSavedRoutesNavigate} />
 
       {features.auth && (
         <Authenticated>
