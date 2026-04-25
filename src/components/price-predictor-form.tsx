@@ -63,8 +63,6 @@ export default function PricePredictorForm({ onPrediction }: Props) {
         time: data.time,
       });
       onPrediction(result);
-      clearLocations();
-      reset();
     } catch (err) {
       setServerError("Erro ao processar a previsão. Tente novamente.");
       console.error(err);
