@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 import Header from "./components/header";
+import { AttributionFooter } from "./components/attribution-footer";
 
 export default function Layout() {
   return (
@@ -12,6 +13,8 @@ export default function Layout() {
           <Outlet />
         </div>
       </main>
+
+      <AttributionFooter />
       <Toaster theme="light" position="bottom-center" />
     </div>
   );
