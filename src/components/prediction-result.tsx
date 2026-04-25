@@ -79,27 +79,25 @@ export default function PredictionResult(data: PredictionData) {
         <Gauge value={level} />
       </div>
 
-      <Card variant="section" padding="sm" className="mb-4">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-sm">
-            <MapPin className="w-4 h-4 text-secondary shrink-0" />
-            <span className="text-on-surface-variant w-16 shrink-0">Origem:</span>
-            <span className="text-on-surface font-medium truncate">{data.origin.name}</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <ArrowRight className="w-4 h-4 text-primary shrink-0" />
-            <span className="text-on-surface-variant w-16 shrink-0">Destino:</span>
-            <span className="text-on-surface font-medium truncate">{data.destination.name}</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="w-4 h-4 text-on-surface-variant shrink-0" />
-            <span className="text-on-surface-variant w-16 shrink-0">Quando:</span>
-            <span className="text-on-surface font-medium capitalize">{formattedDate} às {data.time}</span>
-          </div>
+      <div className="flex flex-col gap-2 mb-4">
+        <div className="flex items-center gap-2 text-sm">
+          <MapPin className="w-4 h-4 text-secondary shrink-0" />
+          <span className="text-on-surface-variant w-16 shrink-0">Origem:</span>
+          <span className="text-on-surface font-medium truncate">{data.origin.name}</span>
         </div>
-      </Card>
+        <div className="flex items-center gap-2 text-sm">
+          <ArrowRight className="w-4 h-4 text-primary shrink-0" />
+          <span className="text-on-surface-variant w-16 shrink-0">Destino:</span>
+          <span className="text-on-surface font-medium truncate">{data.destination.name}</span>
+        </div>
+        <div className="flex items-center gap-2 text-sm">
+          <Clock className="w-4 h-4 text-on-surface-variant shrink-0" />
+          <span className="text-on-surface-variant w-16 shrink-0">Quando:</span>
+          <span className="text-on-surface font-medium capitalize">{formattedDate} às {data.time}</span>
+        </div>
+      </div>
 
-      <div className="mb-4">
+      <div>
         <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-2">Análise</p>
         <p className="text-on-surface text-sm leading-relaxed">{data.reasoning}</p>
       </div>
