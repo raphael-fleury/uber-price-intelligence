@@ -3,7 +3,28 @@ import { action, query, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { internal } from "./_generated/api";
 import { Location, locationSchema } from "./schemas/location.schema";
-import { addDays, isAfter, isBefore } from "date-fns";
+import { addDays, isBefore } from "date-fns";
+
+const classifications = [
+  "Muito abaixo do normal",
+  "Abaixo do normal",
+  "Na média",
+  "Acima do normal",
+  "Muito acima do normal",
+];
+
+function classifyVariation(variation: number) {
+  if (variation <= -0.5) return 1;
+  if (variation <= -0.1) return 2;
+  if (variation <= 0.1) return 3;
+  if (variation <= 0.5) return 4;
+  return 5;
+}
+
+function formatReasoning(prediction: any) {
+  const dateObj = new Date(`${prediction.date}T${prediction.time}`);
+  return `A corrida de ${prediction.origin.name} para ${prediction.destination.name} no dia ${dateObj.toLocaleDateString("pt-BR")} às ${prediction.time} está classificada como "${prediction.classification}" baseado em padrões históricos e condições atuais.`;
+}
 
 export const getPredictions = query({
   args: {},
@@ -27,10 +48,20 @@ export const getPredictions = query({
           .query("locations")
           .withIndex("by_place_id", (q) => q.eq("place_id", prediction.destinationId))
           .first() as Location;
+
+
+        const classificationLevel = classifyVariation(prediction.variation);
+        const classification = classifications[classificationLevel - 1];
+
+        const reasoning = formatReasoning({ ...prediction, origin, destination, classification });
+
         return {
           ...prediction,
           origin,
           destination,
+          classification,
+          classificationLevel,
+          reasoning,
         };
       })
     );
@@ -46,10 +77,7 @@ export const savePrediction = internalMutation({
     destinationId: v.number(),
     date: v.string(),
     time: v.string(),
-    classification: v.string(),
-    classificationLevel: v.number(),
-    reasoning: v.string(),
-    factors: v.array(v.string()),
+    variation: v.number()
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("predictions", args);
@@ -67,7 +95,6 @@ export const predictPrice = action({
     const userId = await getAuthUserId(ctx);
 
     const dateObj = new Date(`${args.date}T${args.time}`);
-    const dayOfWeek = dateObj.toLocaleDateString("pt-BR", { weekday: "long" });
 
     const today = new Date();
     const maxClimateDate = addDays(today, 14);
@@ -79,7 +106,7 @@ export const predictPrice = action({
         date: args.date,
         time: args.time,
       });
-  
+
       const destinationClimate = await ctx.runAction(internal.locations.getLocationClimateAtTime, {
         latitude: args.destination.lat,
         longitude: args.destination.lon,
@@ -90,46 +117,16 @@ export const predictPrice = action({
       console.log({ originClimate, destinationClimate })
     }
 
-    // Gerar valores aleatórios para simulação
-    const classificationLevels = [1, 2, 3, 4, 5];
-    const classifications = [
-      "Muito abaixo do normal",
-      "Abaixo do normal",
-      "Na média",
-      "Acima do normal",
-      "Muito acima do normal",
-    ];
-    const factorsOptions = [
-      "Horário de pico",
-      "Dia da semana",
-      "Demanda alta",
-      "Distância longa",
-      "Trânsito intenso",
-      "Clima adverso",
-      "Horário noturno",
-      "Final de semana",
-    ];
-
-    const randomClassificationLevel =
-      classificationLevels[Math.floor(Math.random() * classificationLevels.length)];
-    const randomClassification = classifications[randomClassificationLevel - 1];
-    const randomFactors = [] as Array<typeof factorsOptions[number]>;
-    for (let i = 0; i < Math.floor(Math.random() * 3) + 2; i++) {
-      const randomFactor =
-        factorsOptions[Math.floor(Math.random() * factorsOptions.length)];
-      if (!randomFactors.includes(randomFactor)) {
-        randomFactors.push(randomFactor);
-      }
-    }
+    const variation = Math.random() - 0.5; // Simula variação de preço entre -50% e +50% (mock)
+    const classificationLevel = classifyVariation(variation);
+    const classification = classifications[classificationLevel - 1];
 
     const parsed = {
       ...args,
-      classification: randomClassification,
-      classificationLevel: randomClassificationLevel,
-      reasoning: `A corrida de ${args.origin.name} para ${args.destination.name} no ${dayOfWeek} às ${args.time} está classificada como "${randomClassification}" baseado em padrões históricos e condições atuais.
- Fatores principais influenciam essa estimativa.
-`,
-      factors: randomFactors,
+      classificationLevel: classificationLevel,
+      classification: classification,
+      variation,
+      reasoning: formatReasoning({ ...args, classification }),
     };
 
     await ctx.runMutation(internal.locations.getOrCreateLocation, args.origin);
@@ -141,10 +138,7 @@ export const predictPrice = action({
       destinationId: args.destination.place_id,
       date: args.date,
       time: args.time,
-      classification: parsed.classification,
-      classificationLevel: parsed.classificationLevel,
-      reasoning: parsed.reasoning,
-      factors: parsed.factors,
+      variation
     });
 
     return parsed;

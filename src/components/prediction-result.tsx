@@ -103,19 +103,6 @@ export default function PredictionResult(data: PredictionData) {
         <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-2">Análise</p>
         <p className="text-on-surface text-sm leading-relaxed">{data.reasoning}</p>
       </div>
-
-      {data.factors && data.factors.length > 0 && (
-        <div>
-          <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-2">Fatores Identificados</p>
-          <div className="flex flex-wrap gap-2">
-            {data.factors.map((factor) => (
-              <Chip key={factor} variant="default">
-                {factor}
-              </Chip>
-            ))}
-          </div>
-        </div>
-      )}
     </Card>
   );
 }

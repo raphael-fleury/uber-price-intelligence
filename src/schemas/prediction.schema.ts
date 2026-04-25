@@ -15,8 +15,8 @@ export type PredictionData = {
   destination: Location;
   date: string;
   time: string;
+  variation: number;
   classification: string;
   classificationLevel: number;
   reasoning: string;
-  factors: string[];
 };

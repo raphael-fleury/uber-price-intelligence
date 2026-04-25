@@ -6,10 +6,7 @@ export const predictionSchema = v.object({
   destinationId: v.number(),
   date: v.string(),
   time: v.string(),
-  classification: v.string(),
-  classificationLevel: v.number(),
-  reasoning: v.string(),
-  factors: v.array(v.string()),
+  variation: v.number()
 });
 
 export type Prediction = Infer<typeof predictionSchema>;
