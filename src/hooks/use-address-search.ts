@@ -14,7 +14,13 @@ export function useAddressSearch() {
 
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${searchQuery}&format=json&limit=5`
+        `https://nominatim.openstreetmap.org/search?q=${searchQuery}&format=json&limit=5`,
+        {
+          headers: {
+            'User-Agent': 'Uber Price Intelligence/1.0 (https://github.com/raphael-fleury/uber-price-intelligence)',
+            'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
+          },
+        }
       );
 
       const data = await response.json();
