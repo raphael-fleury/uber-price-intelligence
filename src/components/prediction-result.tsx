@@ -61,7 +61,7 @@ export default function PredictionResult(data: PredictionData) {
   });
 
   return (
-    <Card variant="glass" padding="md" className={`${config.bgColor} animate-fade-in`}>
+    <Card variant="glass" padding="md" className={`${config.bgColor} animate-fade-in`} style={{ height: 'stretch' }}>
       <div className="flex items-start justify-between mb-5">
         <div>
           <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-1">Previsão de Preço</p>
