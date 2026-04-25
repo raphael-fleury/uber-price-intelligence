@@ -92,6 +92,10 @@ export const predictPrice = action({
     time: v.string(),
   },
   handler: async (ctx, args) => {
+    if (args.origin.place_id === args.destination.place_id) {
+      throw new Error("Origem e destino não podem ser iguais.");
+    }
+
     const userId = await getAuthUserId(ctx);
 
     const dateObj = new Date(`${args.date}T${args.time}`);
