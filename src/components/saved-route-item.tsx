@@ -11,6 +11,26 @@ type SavedRouteItemProps = {
   onBackClick: () => void;
 };
 
+function LocationDisplay({ location, isOrigin }: { location: Location | null, isOrigin: boolean }) {
+  const name = location?.name || "Local desconhecido";
+  const details = location?.display_name.replace(name + ", ", "") || "Detalhes indisponíveis";
+  
+  return (
+    <div className="flex-1">
+      <div className="flex items-center gap-2 mb-2">
+        <MapPin className="w-4 h-4 text-secondary" />
+        <p className="text-sm text-on-surface-variant">{isOrigin ? "De" : "Para"}</p>
+      </div>
+      <p className="text-on-surface font-medium">
+        {name}
+      </p>
+      <p className="text-ellipsis text-xs">
+        {details}
+      </p>
+    </div>
+  )
+}
+
 export default function SavedRouteItem({ route, onBackClick }: SavedRouteItemProps) {
   return (
     <Card
@@ -20,34 +40,16 @@ export default function SavedRouteItem({ route, onBackClick }: SavedRouteItemPro
       className="flex flex-col gap-4"
     >
       <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <MapPin className="w-4 h-4 text-secondary" />
-            <p className="text-sm text-on-surface-variant">De</p>
-          </div>
-          <p className="text-on-surface font-medium">
-            {route.origin?.display_name || "Origem desconhecida"}
-          </p>
-        </div>
+        <LocationDisplay location={route.origin} />
         <button
-          className="p-2 hover:bg-surface-high rounded-lg transition-colors text-on-surface-variant hover:text-semantic-crimson"
+          className="hover:bg-surface-high rounded-lg transition-colors text-on-surface-variant hover:text-semantic-crimson"
           title="Remover rota"
         >
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="h-px bg-surface-variant opacity-50"></div>
-
-      <div>
-        <div className="flex items-center gap-2 mb-2">
-          <MapPin className="w-4 h-4 text-secondary" />
-          <p className="text-sm text-on-surface-variant">Para</p>
-        </div>
-        <p className="text-on-surface font-medium">
-          {route.destination?.display_name || "Destino desconhecido"}
-        </p>
-      </div>
+      <LocationDisplay location={route.destination} />
 
       <div className="pt-2">
         <button
