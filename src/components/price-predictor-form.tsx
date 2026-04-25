@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAction } from "convex/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -85,6 +85,12 @@ export default function PricePredictorForm({ onPrediction, onLoadingChange }: Pr
       setValue(field, value as any, { shouldValidate: true, shouldDirty: true });
     }
   }
+
+  useEffect(() => {
+    return () => {
+      clearLocations();
+    } 
+  }, [])
 
   return (
     <Card variant="section" padding="md">
