@@ -61,22 +61,29 @@ export default function PredictionResult(data: PredictionData) {
   });
 
   return (
-    <Card variant="glass" padding="md" className={`${config.bgColor} animate-fade-in`} style={{ height: 'stretch' }}>
-      <div className="flex items-start justify-between mb-5">
-        <div>
-          <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-1">Previsão de Preço</p>
-          <div className="flex items-center gap-2">
-            <h3 className={`text-xl font-display font-bold ${config.textColor}`}>{config.label}</h3>
+    <Card
+      variant="glass"
+      padding="md"
+      className={`${config.bgColor} animate-fade-in flex flex-col justify-between`}
+      style={{ height: 'stretch' }}
+    >
+      <div>
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-1">Previsão de Preço</p>
+            <div className="flex items-center gap-2">
+              <h3 className={`text-xl font-display font-bold ${config.textColor}`}>{config.label}</h3>
+            </div>
+            <p className="text-on-surface-variant text-sm mt-1">{config.description}</p>
           </div>
-          <p className="text-on-surface-variant text-sm mt-1">{config.description}</p>
+          <Chip variant="soft" color={config.chipColor}>
+            Nível {level}/5
+          </Chip>
         </div>
-        <Chip variant="soft" color={config.chipColor}>
-          Nível {level}/5
-        </Chip>
-      </div>
 
-      <div className="mb-5">
-        <Gauge value={level} />
+        <div className="mb-5">
+          <Gauge value={level} />
+        </div>
       </div>
 
       <div className="flex flex-col gap-2 mb-4">
@@ -96,6 +103,7 @@ export default function PredictionResult(data: PredictionData) {
           <span className="text-on-surface font-medium capitalize">{formattedDate} às {data.time}</span>
         </div>
       </div>
+
 
       <div>
         <p className="text-on-surface-variant text-xs uppercase tracking-wider font-medium mb-2">Análise</p>
