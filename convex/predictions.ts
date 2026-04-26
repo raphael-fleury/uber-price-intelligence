@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { action, query, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { internal } from "./_generated/api";
@@ -93,7 +93,10 @@ export const predictPrice = action({
   },
   handler: async (ctx, args) => {
     if (args.origin.place_id === args.destination.place_id) {
-      throw new Error("Origem e destino não podem ser iguais.");
+      throw new ConvexError({
+        code: "INVALID_LOCATION",
+        message: "Origem e destino não podem ser iguais.",
+      });
     }
 
     const userId = await getAuthUserId(ctx);

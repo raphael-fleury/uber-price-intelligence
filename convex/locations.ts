@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { differenceInMilliseconds, parseISO } from "date-fns";
 import { action, internalAction, internalMutation, internalQuery, query } from "./_generated/server";
 import { locationSchema } from "./schemas/location.schema";
@@ -50,7 +50,10 @@ export const searchLocationsInNominatim = internalAction({
         );
         if (response.status >= 400) {
             console.error(`Nominatim API error: ${response.status} ${response.statusText}`);
-            throw new Error("Erro ao buscar endereços. Tente novamente.");
+            throw new ConvexError({
+                code: "NOMINATIM_API_ERROR",
+                message: "Erro ao buscar endereços. Tente novamente.",
+            });
         }
 
         const data = await response.json();
