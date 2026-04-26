@@ -48,6 +48,10 @@ export const searchLocationsInNominatim = internalAction({
                 },
             }
         );
+        if (response.status >= 400) {
+            console.error(`Nominatim API error: ${response.status} ${response.statusText}`);
+            throw new Error("Erro ao buscar endereços. Tente novamente.");
+        }
 
         const data = await response.json();
         return data;
