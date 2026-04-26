@@ -12,6 +12,7 @@ import { AddressInput } from "./ui/address-input";
 import { useLocationStore } from "../stores/location-store";
 import { PredictionData, PredictionFormData, predictionSchema } from "@/schemas/prediction.schema";
 import { locationSchema } from "@/schemas/location.schema";
+import { ConvexError } from "convex/values";
 
 type Props = {
   onPrediction: (prediction: PredictionData) => void;
@@ -69,8 +70,12 @@ export default function PricePredictorForm({ onPrediction, onLoadingChange }: Pr
       });
       onPrediction(result);
     } catch (err) {
-      setServerError("Erro ao processar a previsão. Tente novamente.");
-      console.error(err);
+      if (err instanceof ConvexError) {
+        setServerError(err.data.message);
+      } else {
+        setServerError("Erro ao processar a previsão. Tente novamente.");
+        console.error(err);
+      }
     } finally {
       updateLoading(false);
     }
