@@ -5,6 +5,18 @@ import { httpAction } from "./_generated/server";
 const http = httpRouter();
 
 http.route({
+  path: "/routes",
+  method: "GET",
+  handler: httpAction(async (ctx) => {
+    const routes = await ctx.runQuery(api.userRoutes.getUserRoutes, {});
+    return new Response(JSON.stringify(routes), {
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    });
+  })
+});
+
+http.route({
   path: "/rides",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
