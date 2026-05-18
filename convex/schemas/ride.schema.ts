@@ -9,8 +9,7 @@ export const rideType = v.union(
 
 export const rideSchema = v.object({
   timestamp: v.number(),
-  from: v.id("locations"),
-  to: v.id("locations"),
+  route: v.id("userRoutes"),
   rideType: rideType,
   price: v.number(),
   waitTime: v.number(),

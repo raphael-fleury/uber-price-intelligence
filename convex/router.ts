@@ -9,10 +9,10 @@ http.route({
   method: "POST",
   handler: httpAction(async (ctx, request) => {
     const body = await request.json();
-    const { routeId, timestamp, rideType, price, waitTime, temperature, precipitation } = body;
+    const { route, timestamp, rideType, price, waitTime, temperature, precipitation } = body;
 
     await ctx.runMutation(internal.rides.saveRide, {
-      routeId,
+      route,
       timestamp,
       rideType,
       price,
@@ -41,7 +41,7 @@ http.route({
       });
     }
 
-    const rides = await ctx.runQuery(api.rides.getRidesByRouteId, {
+    const rides = await ctx.runQuery(api.rides.getRidesByRoute, {
       routeId: routeId as any,
     });
 

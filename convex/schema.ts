@@ -10,7 +10,7 @@ const applicationTables = {
   predictions: defineTable(predictionSchema).index("by_user", ["userId"]),
   locations: defineTable(locationSchema).index("by_place_id", ["place_id"]),
   userRoutes: defineTable(userRouteSchema).index("by_user", ["userId"]),
-  rides: defineTable(rideSchema).index("by_route", ["from", "to"]),
+  rides: defineTable(rideSchema).index("by_route", ["route"]),
   locationCache: defineTable(locationCacheSchema).index("by_search_query", ["searchQuery"]),
 };
 
