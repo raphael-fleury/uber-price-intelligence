@@ -46,16 +46,14 @@ http.route({
     const url = new URL(request.url);
     const routeId = url.searchParams.get("routeId");
 
-    if (!routeId) {
-      return new Response(JSON.stringify({ error: "routeId é obrigatório" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
+    let rides = [];
+    if (routeId) {
+      rides = await ctx.runQuery(api.rides.getRidesByRoute, {
+        routeId: routeId as any,
       });
+    } else {
+      rides = await ctx.runQuery(api.rides.getAllRides, {});
     }
-
-    const rides = await ctx.runQuery(api.rides.getRidesByRoute, {
-      routeId: routeId as any,
-    });
 
     return new Response(JSON.stringify(rides), {
       status: 200,

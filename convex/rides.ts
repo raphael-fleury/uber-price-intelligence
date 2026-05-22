@@ -42,3 +42,36 @@ export const getRidesByRoute = query({
       .collect();
   },
 });
+
+export const getAllRides = query({
+  args: {},
+  handler: async (ctx) => {
+    const rides = await ctx.db.query("rides").collect();
+    
+    // Enriquecer cada corrida com informações da rota e localizações
+    const ridesWithRoute = await Promise.all(
+      rides.map(async (ride) => {
+        const route = await ctx.db.get(ride.route);
+        
+        // Buscar informações de origem e destino
+        const origin = await ctx.db
+          .query("locations")
+          .withIndex("by_place_id", (q) => q.eq("place_id", route!.originId))
+          .first();
+        
+        const destination = await ctx.db
+          .query("locations")
+          .withIndex("by_place_id", (q) => q.eq("place_id", route!.destinationId))
+          .first();
+        
+        return {
+          ...ride,
+          origin,
+          destination,
+        };
+      })
+    );
+    
+    return ridesWithRoute;
+  },
+});
