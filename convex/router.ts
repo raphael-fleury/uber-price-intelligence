@@ -21,7 +21,7 @@ http.route({
   method: "POST",
   handler: httpAction(async (ctx, request) => {
     const body = await request.json();
-    const { route, timestamp, rideType, price, waitTime, temperature, precipitation } = body;
+    const { route, timestamp, rideType, price, waitTime, temperature, precipitation, weatherCode } = body;
 
     await ctx.runMutation(internal.rides.saveRide, {
       route,
@@ -31,6 +31,7 @@ http.route({
       waitTime,
       temperature,
       precipitation,
+      weatherCode,
     });
     return new Response("", {
       status: 201,

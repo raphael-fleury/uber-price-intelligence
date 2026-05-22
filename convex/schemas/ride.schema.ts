@@ -15,6 +15,7 @@ export const rideSchema = v.object({
   waitTime: v.number(),
   temperature: v.number(),
   precipitation: v.number(),
+  weatherCode: v.number(),
 });
 
 export type Ride = Infer<typeof rideSchema>;

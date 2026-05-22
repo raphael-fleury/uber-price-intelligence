@@ -20,6 +20,7 @@ export const saveRide = internalMutation({
       waitTime: args.waitTime,
       temperature: args.temperature,
       precipitation: args.precipitation,
+      weatherCode: args.weatherCode,
     });
   },
 });
