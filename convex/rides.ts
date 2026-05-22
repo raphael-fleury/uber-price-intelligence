@@ -130,3 +130,55 @@ export const getAveragePriceByWeekday = query({
     return result;
   },
 });
+
+export const getAveragePriceByHourBand = query({
+  args: {
+    routeId: v.id("userRoutes"),
+    rideTypeFilter: v.optional(rideType),
+  },
+  handler: async (ctx, args) => {
+    // Validar se a rota existe
+    const route = await ctx.db.get(args.routeId);
+    if (!route) {
+      throw new Error("Rota não encontrada");
+    }
+
+    // Buscar rides pela rota
+    let rides = await ctx.db
+      .query("rides")
+      .withIndex("by_route", (q) => q.eq("route", args.routeId))
+      .collect();
+
+    // Filtrar por tipo de corrida se fornecido
+    if (args.rideTypeFilter) {
+      rides = rides.filter((ride) => ride.rideType === args.rideTypeFilter);
+    }
+
+    // Inicializar acumuladores para cada hora (0-23)
+    const priceByHour: Record<number, { sum: number; count: number }> = {};
+    for (let i = 0; i < 24; i++) {
+      priceByHour[i] = { sum: 0, count: 0 };
+    }
+
+    // Agrupar rides por hora e somar preços
+    rides.forEach((ride) => {
+      const date = new Date(ride.timestamp);
+      const hour = date.getHours();
+      priceByHour[hour].sum += ride.price;
+      priceByHour[hour].count += 1;
+    });
+
+    // Calcular médias
+    const result = Array.from({ length: 24 }, (_, index) => ({
+      hourStart: index,
+      hourEnd: (index + 1) % 24,
+      timeRange: `${String(index).padStart(2, "0")}h-${String((index + 1) % 24).padStart(2, "0")}h`,
+      averagePrice: priceByHour[index].count > 0 
+        ? Math.round((priceByHour[index].sum / priceByHour[index].count) * 100) / 100
+        : 0,
+      rideCount: priceByHour[index].count,
+    }));
+
+    return result;
+  },
+});
