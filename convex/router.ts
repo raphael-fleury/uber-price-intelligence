@@ -8,7 +8,7 @@ http.route({
   path: "/routes",
   method: "GET",
   handler: httpAction(async (ctx) => {
-    const routes = await ctx.runQuery(api.userRoutes.getUserRoutes, {});
+    const routes = await ctx.runQuery(api.userRoutes.getRoutes, {});
     return new Response(JSON.stringify(routes), {
       status: 200,
       headers: { "Content-Type": "application/json" }

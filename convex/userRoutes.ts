@@ -39,6 +39,35 @@ export const saveUserRoute = mutation({
   },
 });
 
+export const getRoutes = query({
+  args: {},
+  handler: async (ctx) => {
+    const routes = await ctx.db
+      .query("userRoutes")
+      .collect();
+
+    const routesWithLocations = await Promise.all(
+      routes.map(async (route) => {
+        const origin = await ctx.db
+          .query("locations")
+          .withIndex("by_place_id", (q) => q.eq("place_id", route.originId))
+          .first() as Location | null;
+        const destination = await ctx.db
+          .query("locations")
+          .withIndex("by_place_id", (q) => q.eq("place_id", route.destinationId))
+          .first() as Location | null;
+        return {
+          ...route,
+          origin,
+          destination,
+        };
+      })
+    );
+
+    return routesWithLocations;
+  },
+});
+
 export const getUserRoutes = query({
   args: {},
   handler: async (ctx) => {
