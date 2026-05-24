@@ -145,6 +145,7 @@ export const getLocationClimateAtTime = internalAction({
         return {
             temperature: data.hourly.temperature_2m[closestDateIndex],
             precipitation: data.hourly.precipitation[closestDateIndex],
+            weatherCode: data.hourly.weather_code[closestDateIndex],
         }
     }
 })

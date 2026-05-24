@@ -1,9 +1,11 @@
 import { ConvexError, v } from "convex/values";
 import { action, query, internalMutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { internal } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import { Location, locationSchema } from "./schemas/location.schema";
 import { addDays, isBefore } from "date-fns";
+
+const modelApiUrl = process.env.MODEL_API_URL || "http://localhost:8000";
 
 const classifications = [
   "Muito abaixo do normal",
@@ -90,6 +92,7 @@ export const predictPrice = action({
     destination: locationSchema,
     date: v.string(),
     time: v.string(),
+    routeId: v.optional(v.id("userRoutes")),
   },
   handler: async (ctx, args) => {
     if (args.origin.place_id === args.destination.place_id) {
@@ -106,32 +109,70 @@ export const predictPrice = action({
     const today = new Date();
     const maxClimateDate = addDays(today, 14);
 
+    let originClimate = null;
+    let destinationClimate = null;
     if (isBefore(dateObj, maxClimateDate)) {
-      const originClimate = await ctx.runAction(internal.locations.getLocationClimateAtTime, {
+      originClimate = await ctx.runAction(internal.locations.getLocationClimateAtTime, {
         latitude: args.origin.lat,
         longitude: args.origin.lon,
         date: args.date,
         time: args.time,
       });
 
-      const destinationClimate = await ctx.runAction(internal.locations.getLocationClimateAtTime, {
+      destinationClimate = await ctx.runAction(internal.locations.getLocationClimateAtTime, {
         latitude: args.destination.lat,
         longitude: args.destination.lon,
         date: args.date,
         time: args.time,
       });
-
-      console.log({ originClimate, destinationClimate })
     }
 
-    const variation = Math.random() - 0.5; // Simula variação de preço entre -50% e +50% (mock)
+    const requestBody = {
+      origin: {
+        latitude: Number(args.origin.lat),
+        longitude: Number(args.origin.lon),
+      },
+      destination: {
+        latitude: Number(args.destination.lat),
+        longitude: Number(args.destination.lon),
+      },
+      rideType: "uber_x",
+      datetime: `${args.date} ${args.time}:00`,
+      temperature: originClimate ? originClimate.temperature : undefined,
+      precipitation: originClimate ? originClimate.precipitation : undefined,
+      weatherCode: originClimate ? originClimate.weatherCode : undefined
+    };
+
+    const response = await fetch(`${modelApiUrl}/predict`, {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+
+    if (!response.ok) {
+      console.error("Erro ao obter previsão do modelo:", response.status, await response.text());
+      throw new ConvexError({
+        code: "MODEL_ERROR",
+        message: "Erro ao obter previsão. Tente novamente.",
+      });
+    }
+
+    const price: number = (await response.json()).predicted_price;
+    const { averagePrice } = await ctx.runQuery(api.rides.getAveragePrice, {
+      routeId: args.routeId,
+      rideType: "uber_x"
+    }) as { averagePrice: number };
+
+    const variation = (price - averagePrice) / averagePrice;
     const classificationLevel = classifyVariation(variation);
     const classification = classifications[classificationLevel - 1];
 
     const parsed = {
       ...args,
-      classificationLevel: classificationLevel,
-      classification: classification,
+      classificationLevel,
+      classification,
       variation,
       reasoning: formatReasoning({ ...args, classification }),
     };
