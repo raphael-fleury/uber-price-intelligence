@@ -182,3 +182,48 @@ export const getAveragePriceByHourBand = query({
     return result;
   },
 });
+
+export const getAveragePrice = query({
+  args: {
+    routeId: v.optional(v.id("userRoutes")),
+    rideType: v.optional(rideType),
+  },
+  handler: async (ctx, args) => {
+    // Validar se a rota existe, se fornecida
+    if (args.routeId) {
+      const route = await ctx.db.get(args.routeId);
+      if (!route) {
+        throw new Error("Rota não encontrada");
+      }
+    }
+
+    // Buscar rides pela rota ou todos os rides
+    let rides = args.routeId
+      ? await ctx.db
+          .query("rides")
+          .withIndex("by_route", (q) => q.eq("route", args.routeId!))
+          .collect()
+      : await ctx.db.query("rides").collect();
+
+    // Filtrar por tipo de corrida se fornecido
+    if (args.rideType) {
+      rides = rides.filter((ride) => ride.rideType === args.rideType);
+    }
+
+    // Calcular preço médio
+    if (rides.length === 0) {
+      return {
+        averagePrice: 0,
+        rideCount: 0,
+      };
+    }
+
+    const totalPrice = rides.reduce((sum, ride) => sum + ride.price, 0);
+    const averagePrice = Math.round((totalPrice / rides.length) * 100) / 100;
+
+    return {
+      averagePrice,
+      rideCount: rides.length,
+    };
+  },
+});

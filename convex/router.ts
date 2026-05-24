@@ -117,4 +117,24 @@ http.route({
   })
 });
 
+http.route({
+  path: "/rides/average-price",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const url = new URL(request.url);
+    const routeId = url.searchParams.get("routeId");
+    const rideType = url.searchParams.get("rideType");
+
+    const averagePrice = await ctx.runQuery(api.rides.getAveragePrice, {
+      routeId: (routeId || undefined) as any,
+      rideType: (rideType || undefined) as any,
+    });
+
+    return new Response(JSON.stringify(averagePrice), {
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    });
+  })
+});
+
 export default http;
