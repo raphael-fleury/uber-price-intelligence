@@ -17,9 +17,10 @@ import { ConvexError } from "convex/values";
 type Props = {
   onPrediction: (prediction: PredictionData) => void;
   onLoadingChange?: (loading: boolean) => void;
+  onDateChange?: (date: string) => void;
 };
 
-export default function PricePredictorForm({ onPrediction, onLoadingChange }: Props) {
+export default function PricePredictorForm({ onPrediction, onLoadingChange, onDateChange }: Props) {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -48,6 +49,12 @@ export default function PricePredictorForm({ onPrediction, onLoadingChange }: Pr
       time: "",
     },
   });
+
+  const dateValue = watch("date");
+
+  useEffect(() => {
+    onDateChange?.(dateValue);
+  }, [dateValue, onDateChange]);
 
   const today = new Date().toISOString().split("T")[0];
 

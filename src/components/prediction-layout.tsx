@@ -8,6 +8,7 @@ import { EmptyStateCard } from "./prediction-states/empty-state-card";
 import { LoadingStateCard } from "./prediction-states/loading-state-card";
 import { ResultSection } from "./prediction-states/result-section";
 import { WeeklyPriceChart } from "./charts/weekly-price-chart";
+import { HourlyPriceChart } from "./charts/hourly-price-chart";
 import { useLocationStore } from "../stores/location-store";
 
 type PredictionLayoutProps = {
@@ -19,10 +20,11 @@ export default function PredictionLayout({ onLoginClick }: PredictionLayoutProps
   const [prediction, setPrediction] = useState<PredictionData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [dateSelected, setDateSelected] = useState<string>("");
   const saveUserRoute = useMutation(api.userRoutes.saveUserRoute);
-  
+
   const { origin, destination } = useLocationStore();
-  
+
 
   const handleSaveRoute = async () => {
     if (!prediction) return;
@@ -55,17 +57,17 @@ export default function PredictionLayout({ onLoginClick }: PredictionLayoutProps
         />
       );
     }
-    
-    if (origin && destination) {
-      return <WeeklyPriceChart />
+
+    if (!origin || !destination) {
+      return <EmptyStateCard />;
     }
-    
-    return <EmptyStateCard />;
+
+    return dateSelected ? <HourlyPriceChart /> : <WeeklyPriceChart />
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <PricePredictorForm onPrediction={setPrediction} onLoadingChange={setIsLoading} />
+      <PricePredictorForm onPrediction={setPrediction} onLoadingChange={setIsLoading} onDateChange={setDateSelected} />
       <div className="flex flex-col gap-6">{renderRightColumn()}</div>
     </div>
   );
