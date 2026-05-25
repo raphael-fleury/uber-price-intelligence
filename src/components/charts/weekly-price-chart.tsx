@@ -5,9 +5,10 @@ import { Id } from "../../../convex/_generated/dataModel";
 
 type WeeklyPriceChartProps = {
   routeId?: Id<"userRoutes">;
+  showCount?: boolean;
 };
 
-export function WeeklyPriceChart({ routeId }: WeeklyPriceChartProps) {
+export function WeeklyPriceChart({ routeId, showCount }: WeeklyPriceChartProps) {
   const data = useQuery(api.rides.getAveragePriceByWeekday, { routeId, rideTypeFilter: "uber_x" });
   const overallAveragePrice = useQuery(api.rides.getAveragePrice, { routeId, rideType: "uber_x" });
 
@@ -109,9 +110,11 @@ export function WeeklyPriceChart({ routeId }: WeeklyPriceChartProps) {
                           : `R$ ${item.averagePrice.toFixed(2)}`
                         : "sem dados"}
                     </p>
-                    <p className="text-xs text-on-surface-variant/40">
-                      ({item.rideCount} {item.rideCount === 1 ? "corrida" : "corridas"})
-                    </p>
+                    {showCount && (
+                      <p className="text-xs text-on-surface-variant/40">
+                        ({item.rideCount} {item.rideCount === 1 ? "corrida" : "corridas"})
+                      </p>
+                    )}
                   </div>
                 </div>
               );
