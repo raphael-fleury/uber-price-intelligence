@@ -17,6 +17,12 @@ export function DateInput({ value, setValue, ...props }: DateInputProps) {
     setIsCalendarOpen(false);
   }
 
+  const handleClearDate = () => {
+    setValue("");
+    setSelectedDates([]);
+    setIsCalendarOpen(false);
+  }
+
   const minDate = props.min === undefined ? undefined : new Date(props.min);
   const maxDate = props.max === undefined ? undefined : new Date(props.max);
 
@@ -28,6 +34,7 @@ export function DateInput({ value, setValue, ...props }: DateInputProps) {
         placeholder="Selecione uma data"
         onClick={() => setIsCalendarOpen(true)}
         className="[&::-webkit-calendar-picker-indicator]:hidden"
+        handleClear={handleClearDate}
         {...props}
       />
 

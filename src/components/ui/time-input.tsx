@@ -15,6 +15,11 @@ export function TimeInput({ value, setValue, ...props }: TimeInputProps) {
     setIsOpen(false);
   };
 
+  const handleClearTime = () => {
+    setValue("");
+    setIsOpen(false);
+  }
+
   return (
     <div className="relative">
       <Input
@@ -23,6 +28,7 @@ export function TimeInput({ value, setValue, ...props }: TimeInputProps) {
         placeholder="Selecione um horário"
         onClick={() => setIsOpen(true)}
         className="[&::-webkit-calendar-picker-indicator]:hidden"
+        handleClear={handleClearTime}
         {...props}
       />
 
