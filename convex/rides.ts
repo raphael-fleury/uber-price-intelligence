@@ -79,25 +79,29 @@ export const getAllRides = query({
 
 export const getAveragePriceByWeekday = query({
   args: {
-    routeId: v.id("userRoutes"),
-    rideTypeFilter: v.optional(rideType),
+    routeId: v.optional(v.id("userRoutes")),
+    rideType: v.optional(rideType),
   },
   handler: async (ctx, args) => {
-    // Validar se a rota existe
-    const route = await ctx.db.get(args.routeId);
-    if (!route) {
-      throw new Error("Rota não encontrada");
+    // Validar se a rota existe, se fornecida
+    if (args.routeId) {
+      const route = await ctx.db.get(args.routeId);
+      if (!route) {
+        throw new Error("Rota não encontrada");
+      }
     }
 
-    // Buscar rides pela rota
-    let rides = await ctx.db
-      .query("rides")
-      .withIndex("by_route", (q) => q.eq("route", args.routeId))
-      .collect();
+    // Buscar rides pela rota ou todos os rides
+    let rides = args.routeId
+      ? await ctx.db
+          .query("rides")
+          .withIndex("by_route", (q) => q.eq("route", args.routeId!))
+          .collect()
+      : await ctx.db.query("rides").collect();
 
     // Filtrar por tipo de corrida se fornecido
-    if (args.rideTypeFilter) {
-      rides = rides.filter((ride) => ride.rideType === args.rideTypeFilter);
+    if (args.rideType) {
+      rides = rides.filter((ride) => ride.rideType === args.rideType);
     }
 
     // Dias da semana em português
@@ -133,25 +137,29 @@ export const getAveragePriceByWeekday = query({
 
 export const getAveragePriceByHourBand = query({
   args: {
-    routeId: v.id("userRoutes"),
-    rideTypeFilter: v.optional(rideType),
+    routeId: v.optional(v.id("userRoutes")),
+    rideType: v.optional(rideType),
   },
   handler: async (ctx, args) => {
-    // Validar se a rota existe
-    const route = await ctx.db.get(args.routeId);
-    if (!route) {
-      throw new Error("Rota não encontrada");
+    // Validar se a rota existe, se fornecida
+    if (args.routeId) {
+      const route = await ctx.db.get(args.routeId);
+      if (!route) {
+        throw new Error("Rota não encontrada");
+      }
     }
 
-    // Buscar rides pela rota
-    let rides = await ctx.db
-      .query("rides")
-      .withIndex("by_route", (q) => q.eq("route", args.routeId))
-      .collect();
+    // Buscar rides pela rota ou todos os rides
+    let rides = args.routeId
+      ? await ctx.db
+          .query("rides")
+          .withIndex("by_route", (q) => q.eq("route", args.routeId!))
+          .collect()
+      : await ctx.db.query("rides").collect();
 
     // Filtrar por tipo de corrida se fornecido
-    if (args.rideTypeFilter) {
-      rides = rides.filter((ride) => ride.rideType === args.rideTypeFilter);
+    if (args.rideType) {
+      rides = rides.filter((ride) => ride.rideType === args.rideType);
     }
 
     // Inicializar acumuladores para cada hora (0-23)

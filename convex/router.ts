@@ -71,16 +71,9 @@ http.route({
     const routeId = url.searchParams.get("routeId");
     const rideType = url.searchParams.get("rideType");
 
-    if (!routeId) {
-      return new Response(JSON.stringify({ error: "routeId é obrigatório" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
     const weekdayAverages = await ctx.runQuery(api.rides.getAveragePriceByWeekday, {
-      routeId: routeId as any,
-      rideTypeFilter: (rideType || undefined) as any,
+      routeId: (routeId || undefined) as any,
+      rideType: (rideType || undefined) as any,
     });
 
     return new Response(JSON.stringify(weekdayAverages), {
@@ -98,16 +91,9 @@ http.route({
     const routeId = url.searchParams.get("routeId");
     const rideType = url.searchParams.get("rideType");
 
-    if (!routeId) {
-      return new Response(JSON.stringify({ error: "routeId é obrigatório" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
     const hourAverages = await ctx.runQuery(api.rides.getAveragePriceByHourBand, {
-      routeId: routeId as any,
-      rideTypeFilter: (rideType || undefined) as any,
+      routeId: (routeId || undefined) as any,
+      rideType: (rideType || undefined) as any,
     });
 
     return new Response(JSON.stringify(hourAverages), {
