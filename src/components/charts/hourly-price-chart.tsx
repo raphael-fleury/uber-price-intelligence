@@ -9,8 +9,8 @@ type HourlyPriceChartProps = {
 };
 
 export function HourlyPriceChart({ routeId, showCount }: HourlyPriceChartProps) {
-  const data = useQuery(api.rides.getAveragePriceByHourBand, { routeId, rideType: "uber_x" });
-  const overallAveragePrice = useQuery(api.rides.getAveragePrice, { routeId, rideType: "uber_x" });
+  const data = useQuery(api.rides.getAveragePriceByHourBand, { routeId });
+  const overallAveragePrice = useQuery(api.rides.getAveragePrice, { routeId });
 
   // Mostrar variação apenas quando routeId não estiver presente
   const showVariation = !routeId && overallAveragePrice;

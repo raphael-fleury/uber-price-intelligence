@@ -9,8 +9,8 @@ type WeeklyPriceChartProps = {
 };
 
 export function WeeklyPriceChart({ routeId, showCount }: WeeklyPriceChartProps) {
-  const data = useQuery(api.rides.getAveragePriceByWeekday, { routeId, rideType: "uber_x" });
-  const overallAveragePrice = useQuery(api.rides.getAveragePrice, { routeId, rideType: "uber_x" });
+  const data = useQuery(api.rides.getAveragePriceByWeekday, { routeId });
+  const overallAveragePrice = useQuery(api.rides.getAveragePrice, { routeId });
 
   // Mostrar variação apenas quando routeId não estiver presente
   const showVariation = !routeId && overallAveragePrice;
