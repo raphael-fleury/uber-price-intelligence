@@ -55,8 +55,9 @@ export function BarChart({ data, config, maxValue }: BarChartProps) {
 
         {/* Chart */}
         {hasData ? (
-          <div className="flex items-end justify-between gap-2 h-40">
-            {data.map((item) => {
+          <div className="overflow-x-auto">
+            <div className="flex items-end justify-between gap-2 h-40 min-w-max">
+              {data.map((item) => {
               const height = getBarHeight(item.value);
               const itemHasData = item.rideCount ? item.rideCount > 0 : true;
 
@@ -97,6 +98,7 @@ export function BarChart({ data, config, maxValue }: BarChartProps) {
                 </div>
               );
             })}
+            </div>
           </div>
         ) : (
           <div className="flex items-center justify-center h-40 text-on-surface-variant/60">
