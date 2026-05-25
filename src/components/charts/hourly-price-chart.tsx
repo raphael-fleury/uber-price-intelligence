@@ -31,7 +31,7 @@ export function HourlyPriceChart({ routeId, showCount }: HourlyPriceChartProps) 
 
     return {
       key: item.hourStart,
-      label: item.timeRange,
+      label: "> " + item.hourStart + "h",
       value: item.averagePrice,
       displayValue: displayValue,
       rideCount: item.rideCount,
