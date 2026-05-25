@@ -46,17 +46,17 @@ export function BarChart({ data, config, maxValue }: BarChartProps) {
 
   return (
     <Card variant="glass" padding="lg">
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col">
         {/* Header */}
-        <div className="mb-4">
+        <div className="mb-2">
           <h3 className="text-lg font-semibold text-on-surface mb-2">{title}</h3>
           {subtitle && <p className="text-xs text-on-surface-variant/60">{subtitle}</p>}
         </div>
 
         {/* Chart */}
         {hasData ? (
-          <div className="overflow-x-auto">
-            <div className="flex items-end justify-between gap-2 h-40 min-w-max">
+          <div style={{ overflow: 'auto' }}>
+            <div className="flex items-end justify-between gap-2 min-w-max pt-8">
               {data.map((item) => {
               const height = getBarHeight(item.value);
               const itemHasData = item.rideCount ? item.rideCount > 0 : true;
@@ -74,7 +74,7 @@ export function BarChart({ data, config, maxValue }: BarChartProps) {
                         style={{ height: `${height}%` }}
                       >
                         {/* Tooltip */}
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-on-surface text-surface-lowest px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-on-surface text-surface-lowest px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                           {tooltipFormatter(item.displayValue)}
                         </div>
                       </div>
@@ -108,7 +108,7 @@ export function BarChart({ data, config, maxValue }: BarChartProps) {
 
         {/* Legend */}
         {legendText && (
-          <div className="pt-4 border-t border-outline/10">
+          <div className="mt-4 pt-4 border-t border-outline/10">
             <div className="text-xs text-on-surface-variant/60">
               <p>{legendText}</p>
             </div>
