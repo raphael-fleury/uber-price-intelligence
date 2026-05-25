@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import { PredictionData } from "@/schemas/prediction.schema";
-import { features } from "../config/features";
 import PricePredictorForm from "./price-predictor-form";
 import { EmptyStateCard } from "./prediction-states/empty-state-card";
 import { LoadingStateCard } from "./prediction-states/loading-state-card";
 import { ResultSection } from "./prediction-states/result-section";
+import { WeeklyPriceChart } from "./charts/weekly-price-chart";
+import { useLocationStore } from "../stores/location-store";
 
 type PredictionLayoutProps = {
   onLoginClick: () => void;
@@ -19,6 +20,9 @@ export default function PredictionLayout({ onLoginClick }: PredictionLayoutProps
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const saveUserRoute = useMutation(api.userRoutes.saveUserRoute);
+  
+  const { origin, destination } = useLocationStore();
+  
 
   const handleSaveRoute = async () => {
     if (!prediction) return;
@@ -51,6 +55,11 @@ export default function PredictionLayout({ onLoginClick }: PredictionLayoutProps
         />
       );
     }
+    
+    if (origin && destination) {
+      return <WeeklyPriceChart />
+    }
+    
     return <EmptyStateCard />;
   };
 
