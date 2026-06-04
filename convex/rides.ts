@@ -45,24 +45,56 @@ export const getRidesByRoute = query({
 });
 
 export const getAllRides = query({
-  args: {},
-  handler: async (ctx) => {
-    const rides = await ctx.db.query("rides").collect();
+  args: {
+    routeId: v.optional(v.id("userRoutes")),
+    routeType: v.optional(rideType),
+  },
+  handler: async (ctx, args) => {
+    // Validar se a rota existe, se fornecida
+    if (args.routeId) {
+      const route = await ctx.db.get(args.routeId);
+      if (!route) {
+        throw new Error("Rota não encontrada");
+      }
+    }
+
+    // Buscar rides pela rota ou todos os rides
+    let rides = args.routeId
+      ? await ctx.db
+          .query("rides")
+          .withIndex("by_route", (q) => q.eq("route", args.routeId!))
+          .collect()
+      : await ctx.db.query("rides").collect();
+
+    // Filtrar por tipo de rota/corrida se fornecido
+    if (args.routeType) {
+      rides = rides.filter((ride) => ride.rideType === args.routeType);
+    }
     
     // Enriquecer cada corrida com informações da rota e localizações
     const ridesWithRoute = await Promise.all(
       rides.map(async (ride) => {
         const route = await ctx.db.get(ride.route);
+
+        if (!route) {
+          return {
+            ...ride,
+            origin: null,
+            destination: null,
+            distance: 0,
+            duration: 0,
+          };
+        }
         
         // Buscar informações de origem e destino
         const origin = await ctx.db
           .query("locations")
-          .withIndex("by_place_id", (q) => q.eq("place_id", route!.originId))
+          .withIndex("by_place_id", (q) => q.eq("place_id", route.originId))
           .first();
         
         const destination = await ctx.db
           .query("locations")
-          .withIndex("by_place_id", (q) => q.eq("place_id", route!.destinationId))
+          .withIndex("by_place_id", (q) => q.eq("place_id", route.destinationId))
           .first();
         
         return {

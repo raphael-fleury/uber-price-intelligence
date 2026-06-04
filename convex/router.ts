@@ -46,15 +46,12 @@ http.route({
   handler: httpAction(async (ctx, request) => {
     const url = new URL(request.url);
     const routeId = url.searchParams.get("routeId");
+    const routeType = url.searchParams.get("routeType") ?? url.searchParams.get("rideType");
 
-    let rides = [];
-    if (routeId) {
-      rides = await ctx.runQuery(api.rides.getRidesByRoute, {
-        routeId: routeId as any,
-      });
-    } else {
-      rides = await ctx.runQuery(api.rides.getAllRides, {});
-    }
+    const rides = await ctx.runQuery(api.rides.getAllRides, {
+      routeId: (routeId || undefined) as any,
+      routeType: (routeType || undefined) as any,
+    });
 
     return new Response(JSON.stringify(rides), {
       status: 200,
