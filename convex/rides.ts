@@ -69,6 +69,8 @@ export const getAllRides = query({
           ...ride,
           origin,
           destination,
+          distance: route?.distance || 0,
+          duration: route?.duration || 0,
         };
       })
     );

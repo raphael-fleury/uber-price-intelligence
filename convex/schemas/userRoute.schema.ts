@@ -4,6 +4,10 @@ export const userRouteSchema = v.object({
   userId: v.optional(v.id("users")),
   originId: v.number(),
   destinationId: v.number(),
+  distance: v.number(),
+  duration: v.number(),
 });
 
-export type UserRoute = Infer<typeof userRouteSchema>;
+export type UserRoute = Infer<typeof userRouteSchema> & {
+  _id: string;
+};

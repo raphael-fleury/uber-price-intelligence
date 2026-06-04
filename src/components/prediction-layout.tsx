@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useAction } from "convex/react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../convex/_generated/api";
 import { PredictionData } from "@/schemas/prediction.schema";
@@ -21,7 +21,7 @@ export default function PredictionLayout({ onLoginClick }: PredictionLayoutProps
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [dateSelected, setDateSelected] = useState<string>("");
-  const saveUserRoute = useMutation(api.userRoutes.saveUserRoute);
+  const saveUserRoute = useAction(api.userRoutes.saveUserRoute);
 
   const { origin, destination } = useLocationStore();
 
